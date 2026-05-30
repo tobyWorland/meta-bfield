@@ -10,6 +10,7 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 add_library(bfield OBJECT
 	bfield.cpp
 	bfield_builder.cpp
+	c_generator.cpp
 )
 
 add_executable(meta_bfield

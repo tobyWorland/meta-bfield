@@ -1,11 +1,24 @@
 #include "c_generator.hpp"
 
+#include <cassert>
 #include <filesystem>
 #include <fstream>
 #include <iostream>
 
 static std::string file_from_filepath(const std::filesystem::path path) {
     return path.filename();
+}
+
+void struct_from_field(std::fstream &file, const BField &field) {
+    file << "struct " << field.name() << "_parts" << " {\n";
+    for (const BPart &part : field.parts()) {
+        if (part.is_reserved())
+            continue;
+
+        assert(part.width() <= 32);
+        file << "    uint32_t " << part.name() << ";\n";
+    }
+    file << "};\n\n";
 }
 
 bool generate_fields(const std::string output_basepath, std::vector<BField> fields) {
@@ -34,6 +47,10 @@ bool generate_fields(const std::string output_basepath, std::vector<BField> fiel
 
     header << "#pragma once\n\n";
     source << "#include \"" << header_file << "\"\n\n";
+
+    for (const BField &field : fields) {
+        struct_from_field(header, field);
+    }
 
     return true;
 }

@@ -26,6 +26,13 @@ int main() {
     builder.push_back_part(BPart("imm8", 8));
     fields.push_back(builder.build());
 
+    builder.set_field_name("bx_t1");
+    builder.set_field_width(16);
+    builder.push_back_part(res_from_binstring("010001 11 0"));
+    builder.push_back_part(BPart("Rm", 4));
+    builder.push_back_part(res_from_binstring("000"));
+    fields.push_back(builder.build());
+
     for (const auto &field: fields) {
         dump_field(field);
     }

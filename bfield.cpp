@@ -1,6 +1,8 @@
 #include "bfield.hpp"
 
 #include <cassert>
+#include <format>
+#include <stdexcept>
 
 BPart::BPart(const std::string &name, unsigned width)
     : m_name{name}, m_width{width} {
@@ -9,7 +11,11 @@ BPart::BPart(const std::string &name, unsigned width)
 
 BPart::BPart(unsigned width, unsigned reserved)
     : m_name{std::nullopt}, m_width{width}, m_reserved_value{reserved} {
-    assert(!in_bit_width(reserved, width));
+    if (!in_bit_width(reserved, width)) {
+        throw std::invalid_argument(
+            std::format("Reserved value {} exceeds bit width of {}", reserved, width)
+            );
+    }
 }
 
 const std::string &BPart::name() const {

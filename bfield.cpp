@@ -38,7 +38,17 @@ bool BPart::reserved() const {
 BField::BField(const std::string &name, unsigned width,
                const std::vector<BPart> &parts)
     : m_name{name}, m_width{width}, m_parts{parts} {
-    // TODO: Check parts equal the width
+
+    unsigned part_width_sum{0};
+    for (const BPart &part : m_parts) {
+        part_width_sum += part.width();
+    }
+    if (part_width_sum != m_width) {
+        throw std::invalid_argument(
+            std::format(
+                "Part widths only sum to {} instead of the field width {}",
+                part_width_sum, m_width));
+    }
 }
 
 const std::string &BField::name() const {

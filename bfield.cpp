@@ -87,3 +87,13 @@ unsigned BField::width() const {
 const std::vector<BPart> BField::parts() const {
     return m_parts;
 }
+unsigned BField::reserved_value() const {
+    unsigned value{0};
+    for (const BPart &part : m_parts) {
+        value <<= part.width();
+        if (part.is_reserved()) {
+            value |= part.reserved_value();
+        }
+    }
+    return value;
+}

@@ -45,4 +45,5 @@ public:
     const std::string &name() const;
     unsigned width() const;
     const std::vector<BPart> parts() const;
+    unsigned reserved_value() const; // TODO: Test
 };

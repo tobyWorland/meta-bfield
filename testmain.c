@@ -20,5 +20,10 @@ int main() {
 	bits_encoded = encode_bx_t1(&bx_lr_out, bx_t1_parts);
 	printf("Bits encoded: %u\nOut: 0x%04X\n", bits_encoded, bx_lr_out);
 
+	uint16_t nop[2];
+	struct nop_t2_parts nop_t2_parts;
+	encode_nop_t2((uint32_t*)nop, nop_t2_parts);
+	printf("NOP.W: %04X %04X\n", nop[0], nop[1]);
+
     return 0;
 }

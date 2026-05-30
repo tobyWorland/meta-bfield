@@ -33,6 +33,13 @@ int main() {
     builder.push_back_part(res_from_binstring("000"));
     fields.push_back(builder.build());
 
+    builder.set_field_name("nop_t2");
+    builder.set_field_width(32);
+    builder.set_swapped();
+    builder.push_back_part(res_from_binstring("11110 0 111 01 0 1111"));
+    builder.push_back_part(res_from_binstring("10 0 0 0 000 00000000"));
+    fields.push_back(builder.build());
+
     for (const auto &field: fields) {
         dump_field(field);
     }

@@ -45,7 +45,7 @@ void prototype_match_from_field(std::fstream &file, const BField &field) {
 void prototype_encode_from_field(std::fstream &file, const BField &field) {
     file << "unsigned encode_" << field.name();
     file << "(" << type_from_width(field.width()) << " *out";
-    file << ", " << struct_name_from_field(field);
+    file << ", " << struct_name_from_field(field) << " parts";
     file << ")";
 }
 
@@ -82,28 +82,55 @@ void generate_header(std::fstream &header, const std::vector<BField> &fields) {
     header << "\n";
 }
 
+void body_match_from_field(std::fstream &source, const BField &field) {
+    unsigned width_left = field.width();
+    bool first{true};
+
+    prototype_match_from_field(source, field);
+    source << " {\n    return ";
+    for (const BPart &part : field.parts()) {
+        if (part.is_reserved()) {
+            if (!first) {
+                source << " && \\\n        ";
+            }
+            first = false;
+            unsigned shift = width_left - part.width();
+            source << std::format("(((field >> {}) & ((1 << {}) - 1)) == {})",
+                                  shift, part.width(), part.reserved_value());
+            }
+        width_left -= part.width();
+    }
+    source << ";\n}\n";
+}
+
+void body_encode_from_field(std::fstream &source, const BField &field) {
+    unsigned width_left = field.width();
+
+    prototype_encode_from_field(source, field);
+    source << " {\n";
+    source << "    " << type_from_width(field.width()) << " encoded = 0x" << std::hex << field.reserved_value() << ";\n";
+    for (const BPart &part : field.parts()) {
+        if (!part.is_reserved()) {
+            unsigned shift = width_left - part.width();
+            // TODO: Return 0 from the function if part does not fit
+            source << std::format("    encoded |= (parts.{} << {});\n", part.name(), shift);
+        }
+
+        width_left -= part.width();
+    }
+    source << "    return encoded;";
+    source << "\n}\n";
+}
+
 void generate_source(std::fstream &source, const std::vector<BField> &fields) {
+    for (const BField &field : fields) {
+        body_match_from_field(source, field);
+    }
+    source << "\n";
 
     for (const BField &field : fields) {
-        unsigned width_left = field.width();
-        bool first{true};
-
-        prototype_match_from_field(source, field);
-        source << " {\n    return ";
-        for (const BPart &part : field.parts()) {
-            if (part.is_reserved()) {
-                if (!first) {
-                    source << " && \\\n        ";
-                }
-                first = false;
-                source << std::format("(((field >> {}) & ((1 << {}) - 1)) == {})",
-                                      width_left - part.width(), part.width(), part.reserved_value());
-            }
-            width_left -= part.width();
-        }
-        source << ";\n}\n";
+        body_encode_from_field(source, field);
     }
-
     source << "\n";
 }
 

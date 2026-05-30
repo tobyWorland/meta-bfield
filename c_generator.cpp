@@ -6,6 +6,8 @@
 #include <fstream>
 #include <iostream>
 
+constexpr std::string indent(4, ' '); // indent by 4 spaces
+
 static std::string file_from_filepath(const std::filesystem::path path) {
     return path.filename();
 }
@@ -33,7 +35,7 @@ void struct_from_field(std::fstream &file, const BField &field) {
 
         assert(part.width() <= 32);
         // TODO: handle if signed
-        file << "    " << type_from_width(part.width()) << " " << part.name() << ";\n";
+        file << indent << type_from_width(part.width()) << " " << part.name() << ";\n";
     }
     file << "};\n\n";
 }
@@ -91,7 +93,7 @@ void body_match_from_field(std::fstream &source, const BField &field) {
     for (const BPart &part : field.parts()) {
         if (part.is_reserved()) {
             if (!first) {
-                source << " && \\\n        ";
+                source << " && \\\n" << indent << indent;
             }
             first = false;
             unsigned shift = width_left - part.width();
@@ -108,17 +110,17 @@ void body_encode_from_field(std::fstream &source, const BField &field) {
 
     prototype_encode_from_field(source, field);
     source << " {\n";
-    source << "    " << type_from_width(field.width()) << " encoded = 0x" << std::hex << field.reserved_value() << ";\n";
+    source << indent << type_from_width(field.width()) << " encoded = 0x" << std::hex << field.reserved_value() << ";\n";
     for (const BPart &part : field.parts()) {
         if (!part.is_reserved()) {
             unsigned shift = width_left - part.width();
             // TODO: Return 0 from the function if part does not fit
-            source << std::format("    encoded |= (parts.{} << {});\n", part.name(), shift);
+            source << std::format("{}encoded |= (parts.{} << {});\n", indent, part.name(), shift);
         }
 
         width_left -= part.width();
     }
-    source << "    return encoded;";
+    source << indent << "return encoded;";
     source << "\n}\n";
 }
 

@@ -31,7 +31,7 @@ std::string struct_name_from_field(const BField &field) {
 }
 
 void struct_from_field(std::fstream &file, const BField &field) {
-    file << "struct " << struct_name_from_field(field) << " {\n";
+    file << struct_name_from_field(field) << " {\n";
     for (const BPart &part : field.parts()) {
         if (part.is_reserved())
             continue;

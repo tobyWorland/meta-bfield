@@ -133,6 +133,26 @@ void body_encode_from_field(std::fstream &source, const BField &field) {
     source << "}\n";
 }
 
+void body_decode_from_field(std::fstream &source, const BField &field) {
+    unsigned width_left = field.width();
+
+    prototype_decode_from_field(source, field);
+    source << " {\n";
+    source << indent << struct_name_from_field(field) << " result = {};\n";
+    for (const BPart &part : field.parts()) {
+        if (!part.is_reserved()) {
+            unsigned shift = width_left - part.width();
+            source << indent
+                   << std::format("result.{} = ((field >> {}) & ((1 << {}) - 1));\n",
+                                  part.name(), shift, part.width());
+        }
+
+        width_left -= part.width();
+    }
+    source << indent << "return result;\n";
+    source << "}\n";
+}
+
 void generate_source(std::fstream &source, const std::vector<BField> &fields) {
     for (const BField &field : fields) {
         body_match_from_field(source, field);
@@ -141,6 +161,11 @@ void generate_source(std::fstream &source, const std::vector<BField> &fields) {
 
     for (const BField &field : fields) {
         body_encode_from_field(source, field);
+    }
+    source << "\n";
+
+    for (const BField &field : fields) {
+        body_decode_from_field(source, field);
     }
     source << "\n";
 }

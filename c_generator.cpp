@@ -55,33 +55,7 @@ void prototype_decode_from_field(std::fstream &file, const BField &field) {
     file << "(" << type_from_width(field.width()) << " field)";
 }
 
-bool generate_fields(const std::string output_basepath, std::vector<BField> fields) {
-    std::string source_path = output_basepath + ".c";
-    std::string header_path = output_basepath + ".h";
-    std::string header_file = file_from_filepath(header_path);
-
-    // TODO: Check if exist and only overwrite if there is a comment at the top "// AUTOGEN - DO NOT EDIT"
-    std::fstream source(source_path, std::ios_base::out);
-    std::fstream header(header_path, std::ios_base::out);
-    bool open_error{false};
-
-    if (!source.is_open()) {
-        std::cerr << "Failed to open " << source_path << '\n';
-        open_error = true;
-    }
-
-    if (!header.is_open()) {
-        std::cerr << "Failed to open " << header_path << '\n';
-        open_error = true;
-    }
-
-    if (open_error) {
-        return false;
-    }
-
-    header << "#pragma once\n\n";
-    source << "#include \"" << header_file << "\"\n\n";
-
+void generate_header(std::fstream &header, const std::vector<BField> &fields) {
     for (const BField &field : fields) {
         struct_from_field(header, field);
     }
@@ -106,6 +80,62 @@ bool generate_fields(const std::string output_basepath, std::vector<BField> fiel
     }
 
     header << "\n";
+}
+
+void generate_source(std::fstream &source, const std::vector<BField> &fields) {
+
+    for (const BField &field : fields) {
+        unsigned width_left = field.width();
+        bool first{true};
+
+        prototype_match_from_field(source, field);
+        source << " {\n    return ";
+        for (const BPart &part : field.parts()) {
+            if (part.is_reserved()) {
+                if (!first) {
+                    source << " && \\\n        ";
+                }
+                first = false;
+                source << std::format("(((field >> {}) & ((1 << {}) - 1)) == {})",
+                                      width_left - part.width(), part.width(), part.reserved_value());
+            }
+            width_left -= part.width();
+        }
+        source << ";\n}\n";
+    }
+
+    source << "\n";
+}
+
+bool generate_fields(const std::string output_basepath, const std::vector<BField> &fields) {
+    std::string source_path = output_basepath + ".c";
+    std::string header_path = output_basepath + ".h";
+    std::string header_file = file_from_filepath(header_path);
+
+    // TODO: Check if exist and only overwrite if there is a comment at the top "// AUTOGEN - DO NOT EDIT"
+    std::fstream source(source_path, std::ios_base::out);
+    std::fstream header(header_path, std::ios_base::out);
+    bool open_error{false};
+
+    if (!source.is_open()) {
+        std::cerr << "Failed to open " << source_path << '\n';
+        open_error = true;
+    }
+
+    if (!header.is_open()) {
+        std::cerr << "Failed to open " << header_path << '\n';
+        open_error = true;
+    }
+
+    if (open_error) {
+        return false;
+    }
+
+    header << "#pragma once\n\n" << "#include <stdbool.h>\n#include <stdint.h>\n\n";
+    source << "#include \"" << header_file << "\"\n\n";
+
+    generate_header(header, fields);
+    generate_source(source, fields);
 
     return true;
 }

@@ -5,4 +5,4 @@
 #include <string>
 #include <vector>
 
-bool generate_fields(const std::string output_basepath, std::vector<BField> fields);
+bool generate_fields(const std::string output_basepath, const std::vector<BField> &fields);

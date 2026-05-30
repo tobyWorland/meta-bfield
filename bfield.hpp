@@ -22,7 +22,8 @@ public:
 
     const std::string &name() const;
     unsigned width() const;
-    bool reserved() const;
+    bool is_reserved() const;
+    unsigned reserved_value() const;
 };
 
 class BField {

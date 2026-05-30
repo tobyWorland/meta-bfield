@@ -31,8 +31,12 @@ unsigned BPart::width() const {
     return m_width;
 }
 
-bool BPart::reserved() const {
+bool BPart::is_reserved() const {
     return m_name == std::nullopt;
+}
+
+unsigned BPart::reserved_value() const {
+    return m_reserved_value;
 }
 
 BField::BField(const std::string &name, unsigned width,

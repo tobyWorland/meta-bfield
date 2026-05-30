@@ -100,7 +100,7 @@ void body_match_from_field(std::fstream &source, const BField &field) {
             }
             first = false;
             unsigned shift = width_left - part.width();
-            source << std::format("(((field >> {}) & ((1 << {}) - 1)) == {})",
+            source << std::format("(((field >> {}) & ((1ULL << {}) - 1)) == {})",
                                   shift, part.width(), part.reserved_value());
             }
         width_left -= part.width();
@@ -120,7 +120,7 @@ void body_encode_from_field(std::fstream &source, const BField &field) {
         if (!part.is_reserved()) {
             unsigned shift = width_left - part.width();
             // Check part does not exceed width and if it does then return 0 to signal error
-            source << indent() << std::format("if (parts.{} & ~((1 << {}) - 1)) {{\n",
+            source << indent() << std::format("if (parts.{} & ~((1ULL << {}) - 1)) {{\n",
                                               part.name(), part.width());
             source << indent(2) << "return 0;\n" << indent() << "}\n";
 
@@ -146,7 +146,7 @@ void body_decode_from_field(std::fstream &source, const BField &field) {
         if (!part.is_reserved()) {
             unsigned shift = width_left - part.width();
             source << indent()
-                   << std::format("result.{} = ((field >> {}) & ((1 << {}) - 1));\n",
+                   << std::format("result.{} = ((field >> {}) & ((1ULL << {}) - 1));\n",
                                   part.name(), shift, part.width());
         }
 

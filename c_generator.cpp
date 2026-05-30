@@ -116,7 +116,12 @@ void body_encode_from_field(std::fstream &source, const BField &field) {
     for (const BPart &part : field.parts()) {
         if (!part.is_reserved()) {
             unsigned shift = width_left - part.width();
-            // TODO: Return 0 from the function if part does not fit
+            // Check part does not exceed width and if it does then return 0 to signal error
+            source << std::format("{}if (parts.{} & ~((1 << {}) - 1)) {{\n",
+                                  indent, part.name(), part.width());
+            source << std::format("{}{}return 0;\n{}}}\n", indent, indent, indent);
+
+            // Encode part
             source << std::format("{}encoded |= (parts.{} << {});\n",
                                   indent, part.name(), shift);
         }

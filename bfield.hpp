@@ -5,7 +5,7 @@
 #include <optional>
 
 template<typename T> T bit(T n) {
-    return (static_cast<T>(1) << n);
+    return (1ULL << n);
 }
 
 template <typename T> bool in_bit_width(T value, T bit_width) {

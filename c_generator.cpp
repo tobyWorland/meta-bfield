@@ -110,18 +110,22 @@ void body_encode_from_field(std::fstream &source, const BField &field) {
 
     prototype_encode_from_field(source, field);
     source << " {\n";
-    source << indent << type_from_width(field.width()) << " encoded = 0x" << std::hex << field.reserved_value() << ";\n";
+    source << indent << type_from_width(field.width()) << " encoded = 0x"
+           << std::hex << field.reserved_value()
+           << std::dec << ";\n";
     for (const BPart &part : field.parts()) {
         if (!part.is_reserved()) {
             unsigned shift = width_left - part.width();
             // TODO: Return 0 from the function if part does not fit
-            source << std::format("{}encoded |= (parts.{} << {});\n", indent, part.name(), shift);
+            source << std::format("{}encoded |= (parts.{} << {});\n",
+                                  indent, part.name(), shift);
         }
 
         width_left -= part.width();
     }
-    source << indent << "return encoded;";
-    source << "\n}\n";
+    source << indent << "*out = encoded;\n";
+    source << indent << "return " << field.width() << ";\n";
+    source << "}\n";
 }
 
 void generate_source(std::fstream &source, const std::vector<BField> &fields) {

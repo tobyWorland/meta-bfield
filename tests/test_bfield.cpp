@@ -54,3 +54,21 @@ TEST(bfieldbuilder, success) {
     builder.push_back_part(BPart(8, 0));
     EXPECT_NO_THROW(builder.build());
 }
+
+TEST(res_from_binstring, simple) {
+    auto rval = res_from_binstring("");
+    EXPECT_EQ(rval.width, 0);
+    EXPECT_EQ(rval.value, 0);
+
+    rval = res_from_binstring("101");
+    EXPECT_EQ(rval.width, 3);
+    EXPECT_EQ(rval.value, 0b101);
+
+    rval = res_from_binstring("11 1 1");
+    EXPECT_EQ(rval.width, 4);
+    EXPECT_EQ(rval.value, 0b1111);
+
+    EXPECT_THROW(res_from_binstring("11 1 1 1a0"), std::invalid_argument);
+
+    // TODO: Test for overflow
+}

@@ -1,5 +1,7 @@
 #include <iostream>
+#include <string>
 
+#include "bfield.hpp"
 #include "bfield_builder.hpp"
 
 int main() {
@@ -7,7 +9,7 @@ int main() {
 
     builder.set_field_name("bkpt_t1");
     builder.set_field_width(16);
-    builder.push_back_part(BPart(8, 0b10111110));
+    builder.push_back_part(res_from_binstring("1011 1110"));
     builder.push_back_part(BPart("imm8", 8));
     BField bkpt_t1 = builder.build();
 

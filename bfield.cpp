@@ -4,10 +4,30 @@
 #include <format>
 #include <stdexcept>
 
-BPart::BPart(const std::string &name, unsigned width)
-    : m_name{name}, m_width{width} {
+ReservedValue res_from_binstring(const std::string &binstring) {
+    ReservedValue result{};
 
+    // TODO: Check width does not exceed bit width of value
+    for (char c : binstring) {
+        switch (c) {
+        case '1':
+        case '0':
+            result.width++;
+            result.value <<= 1;
+            result.value |= c - '0';
+            break;
+        case ' ':
+            break;
+        default:
+            throw std::invalid_argument(std::format("Unexpected char in binary string {}", c));
+        }
+    }
+
+    return result;
 }
+
+BPart::BPart(const std::string &name, unsigned width)
+    : m_name{name}, m_width{width} {}
 
 BPart::BPart(unsigned width, unsigned reserved)
     : m_name{std::nullopt}, m_width{width}, m_reserved_value{reserved} {
@@ -17,6 +37,9 @@ BPart::BPart(unsigned width, unsigned reserved)
             );
     }
 }
+
+BPart::BPart(ReservedValue res_value)
+    : BPart(res_value.width, res_value.value) {}
 
 const std::string &BPart::name() const {
     const static std::string reserved{"Reserved"};

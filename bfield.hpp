@@ -12,6 +12,14 @@ template <typename T> bool in_bit_width(T value, T bit_width) {
     return (value & ~(bit(bit_width) - 1)) == 0;
 }
 
+struct ReservedValue {
+    unsigned width;
+    unsigned value;
+};
+
+// TODO: Make static of BPart?
+ReservedValue res_from_binstring(const std::string &binstring);
+
 class BPart {
     const std::optional<std::string> m_name;
     const unsigned m_width;
@@ -19,6 +27,7 @@ class BPart {
 public:
     BPart(const std::string &name, unsigned width);
     BPart(unsigned width, unsigned reserved);
+    BPart(ReservedValue res_value);
 
     const std::string &name() const;
     unsigned width() const;

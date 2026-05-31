@@ -50,7 +50,9 @@ void prototype_match_from_field(std::fstream &file, const BField &field) {
 void prototype_encode_from_field(std::fstream &file, const BField &field) {
     file << "unsigned encode_" << field.name();
     file << "(" << type_from_width(field.width()) << " *out";
-    file << ", " << struct_name_from_field(field) << " parts";
+    if (field.any_variable_parts()) {
+        file << ", " << struct_name_from_field(field) << " parts";
+    }
     file << ")";
 }
 
@@ -62,7 +64,9 @@ void prototype_decode_from_field(std::fstream &file, const BField &field) {
 
 void generate_header(std::fstream &header, const std::vector<BField> &fields) {
     for (const BField &field : fields) {
-        struct_from_field(header, field);
+        if (field.any_variable_parts()) {
+            struct_from_field(header, field);
+        }
     }
 
     for (const BField &field : fields) {
@@ -80,8 +84,10 @@ void generate_header(std::fstream &header, const std::vector<BField> &fields) {
     header << "\n";
 
     for (const BField &field : fields) {
-        prototype_decode_from_field(header, field);
-        header << ";\n";
+        if (field.any_variable_parts()) {
+            prototype_decode_from_field(header, field);
+            header << ";\n";
+        }
     }
 
     header << "\n";
@@ -168,7 +174,9 @@ void generate_source(std::fstream &source, const std::vector<BField> &fields) {
     source << "\n";
 
     for (const BField &field : fields) {
-        body_decode_from_field(source, field);
+        if (field.any_variable_parts()) {
+            body_decode_from_field(source, field);
+        }
     }
     source << "\n";
 }

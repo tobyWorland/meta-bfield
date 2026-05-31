@@ -97,3 +97,9 @@ unsigned BField::reserved_value() const {
     }
     return value;
 }
+
+bool BField::any_variable_parts() const {
+    return std::any_of(m_parts.cbegin(), m_parts.cend(),
+                       [](auto &part) { return !part.is_reserved(); }
+        );
+}

@@ -2,7 +2,7 @@
     {
         "name": "bkpt_t1",
         "width": 16,
-        "fields": [
+        "parts": [
             "1011 1110",
             {"name": "imm8", "width": 8}
         ]
@@ -10,7 +10,7 @@
     {
         "name": "bx_t1",
         "width": 16,
-        "fields": [
+        "parts": [
             "010001 11 0",
             {"name": "Rm", "width": 4},
             "000"
@@ -19,15 +19,17 @@
     {
         "name": "nop_t1",
         "width": 16,
-        "fields": [
+        "parts": [
             "1011 1111 0000 0000"
         ]
     },
     {
         "name": "nop_t2",
         "width": 32,
-        "fields": [
-            "11110 0 111 01 0 1111 10 0 0 0 000 00000000"
+		"swapped": true,
+        "parts": [
+			"11110 0 111 01 0 1111",
+			"10 0 0 0 000 00000000"
         ]
     }
 ]

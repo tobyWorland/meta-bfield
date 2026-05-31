@@ -7,11 +7,15 @@ set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+find_package(Boost REQUIRED COMPONENTS json)
+
 add_library(bfield OBJECT
 	bfield.cpp
 	bfield_builder.cpp
 	c_generator.cpp
+	spec.cpp
 )
+target_link_libraries(bfield Boost::boost Boost::json)
 
 add_executable(meta_bfield
 	meta_bfield.cpp

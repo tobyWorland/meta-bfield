@@ -3,7 +3,7 @@
 
 #include "c_generator.hpp"
 #include "bfield.hpp"
-#include "bfield_builder.hpp"
+#include "spec.hpp"
 
 static void dump_field(const BField &field) {
     std::cout << field.name() << " " << field.width() << '\n';
@@ -17,6 +17,10 @@ static void dump_field(const BField &field) {
 }
 
 int main() {
+#if 1
+    SpecReader spec_reader;
+    auto fields = spec_reader.read_from_spec("example_specs/t32.json");
+#else
     BFieldBuilder builder;
     std::vector<BField> fields;
 
@@ -43,6 +47,7 @@ int main() {
     for (const auto &field: fields) {
         dump_field(field);
     }
+#endif
 
     std::string output_path = "build/out/field";
     if (generate_fields(output_path, fields)) {

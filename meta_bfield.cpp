@@ -17,33 +17,10 @@ static void dump_field(const BField &field) {
 }
 
 int main() {
-#if 1
     SpecReader spec_reader;
     auto fields = spec_reader.read_from_spec("example_specs/t32.json");
-#else
-    BFieldBuilder builder;
-    std::vector<BField> fields;
 
-    builder.set_field_name("bkpt_t1");
-    builder.set_field_width(16);
-    builder.push_back_part(res_from_binstring("1011 1110"));
-    builder.push_back_part(BPart("imm8", 8));
-    fields.push_back(builder.build());
-
-    builder.set_field_name("bx_t1");
-    builder.set_field_width(16);
-    builder.push_back_part(res_from_binstring("010001 11 0"));
-    builder.push_back_part(BPart("Rm", 4));
-    builder.push_back_part(res_from_binstring("000"));
-    fields.push_back(builder.build());
-
-    builder.set_field_name("nop_t2");
-    builder.set_field_width(32);
-    builder.set_swapped();
-    builder.push_back_part(res_from_binstring("11110 0 111 01 0 1111"));
-    builder.push_back_part(res_from_binstring("10 0 0 0 000 00000000"));
-    fields.push_back(builder.build());
-
+#if 0
     for (const auto &field: fields) {
         dump_field(field);
     }

@@ -51,7 +51,7 @@ void prototype_encode_from_field(std::fstream &file, const BField &field) {
     file << "unsigned encode_" << field.name();
     file << "(" << type_from_width(field.width()) << " *out";
     if (field.any_variable_parts()) {
-        file << ", " << struct_name_from_field(field) << " parts";
+        file << ", " << struct_name_from_field(field) << " *parts";
     }
     file << ")";
 }
@@ -126,12 +126,12 @@ void body_encode_from_field(std::fstream &source, const BField &field) {
         if (!part.is_reserved()) {
             unsigned shift = width_left - part.width();
             // Check part does not exceed width and if it does then return 0 to signal error
-            source << indent() << std::format("if (parts.{} & ~((1ULL << {}) - 1)) {{\n",
+            source << indent() << std::format("if (parts->{} & ~((1ULL << {}) - 1)) {{\n",
                                               part.name(), part.width());
             source << indent(2) << "return 0;\n" << indent() << "}\n";
 
             // Encode part
-            source << indent() << std::format("encoded |= (parts.{} << {});\n",
+            source << indent() << std::format("encoded |= (parts->{} << {});\n",
                                               part.name(), shift);
         }
 

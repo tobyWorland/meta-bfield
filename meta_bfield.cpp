@@ -26,7 +26,7 @@ int main() {
     }
 #endif
 
-    std::string output_path = "build/out/field";
+    std::string output_path = "build/out/t32_encoding";
     if (generate_fields(output_path, fields)) {
         std::cout << "Generate successful\n";
     } else {

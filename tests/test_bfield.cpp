@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
-#include "../bfield.hpp"
-#include "../bfield_builder.hpp"
+
+#include <bfield.hpp>
+#include <bfield_builder.hpp>
 
 TEST(bfield, bpart_reserved) {
     EXPECT_NO_THROW(BPart(4, 5));

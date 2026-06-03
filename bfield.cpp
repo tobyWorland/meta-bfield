@@ -30,7 +30,7 @@ BPart::BPart(const std::string &name, unsigned width)
     : m_name{name}, m_width{width} {}
 
 BPart::BPart(unsigned width, unsigned reserved)
-    : m_name{std::nullopt}, m_width{width}, m_reserved_value{reserved} {
+    : m_name{}, m_width{width}, m_reserved_value{reserved} {
     if (!in_bit_width(reserved, width)) {
         throw std::invalid_argument(
             std::format("Reserved value {} exceeds bit width of {}", reserved, width)
@@ -44,10 +44,11 @@ BPart::BPart(ReservedValue res_value)
 const std::string &BPart::name() const {
     const static std::string reserved{"Reserved"};
 
-    if (auto &name = m_name) {
-        return *name;
+    if (m_name.empty()) {
+        return reserved;
+    } else {
+        return m_name;
     }
-    return reserved;
 }
 
 unsigned BPart::width() const {
@@ -55,7 +56,7 @@ unsigned BPart::width() const {
 }
 
 bool BPart::is_reserved() const {
-    return m_name == std::nullopt;
+    return m_name.empty();
 }
 
 unsigned BPart::reserved_value() const {
@@ -143,11 +144,43 @@ const std::vector<BExport> BField::exports() const {
 
 // TODO: Reference to BField should be included in BExport instead
 const BPart &BField::get_passthrough_part(const BExport &exp) const {
-    for (const BPart &part : m_parts) {
+    for (const BPart &part: m_parts) {
         if (part.name() == exp.name()) {
             return part;
         }
     }
     assert(false);
     std::terminate();
+}
+
+// TODO: should be a better way
+const BPart &BField::get_part_by_name(const std::string &part_name) const {
+    auto found_part_it =
+        std::find_if(m_parts.cbegin(), m_parts.cend(),
+                     [&part_name](const BPart &part) {
+                         return part.name() == part_name;
+                     });
+    if (found_part_it == m_parts.cend()) {
+        assert(false);
+        std::terminate();
+    }
+    return *found_part_it;
+}
+
+// TODO: Should be a better way
+unsigned BField::get_export_width(const BExport &exp) const {
+    unsigned width{0};
+    for (const auto &name : exp.part_names()) {
+        width += get_part_by_name(name).width();
+    }
+    return width;
+}
+
+bool BField::is_part_exported(const std::string &part_name) const {
+    for (const auto &exp : m_exports) {
+        if (exp.name() == part_name) {
+            return true;
+        }
+    }
+    return false;
 }

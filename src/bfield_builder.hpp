@@ -3,6 +3,7 @@
 #include "bfield.hpp"
 
 #include <exception>
+#include <optional>
 
 class BFieldBuilderError : public std::exception {
     std::string m_message;

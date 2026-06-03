@@ -20,6 +20,10 @@ class BFieldBuilder {
     std::vector<BExport> m_exports;
     bool m_swapped{false};
 
+    std::optional<std::string> m_new_export_name;
+    std::vector<std::string> m_new_export_parts;
+    std::optional<bool> m_new_export_is_signed;
+
 public:
     void reset();
 
@@ -33,7 +37,14 @@ public:
     // parts in half and swap the halves instead.
     void set_swapped(); // TODO: Test
     void push_back_part(const BPart &part);
-    void push_back_export(const BExport &exp);
+
+    void export_new();
+    void export_set_name(std::string name);
+    void export_push_part(std::string part_name);
+    void export_set_signed(bool is_signed);
+    void export_commit();
+
+    void export_commit_passthrough(std::string part_name);
 
     BField build();
 };

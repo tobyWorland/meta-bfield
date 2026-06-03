@@ -4,6 +4,8 @@
 #include <format>
 #include <iostream>
 
+// TODO: Make asserts into throws
+
 void BFieldBuilder::reset() {
     m_field_name.reset();
     m_field_width.reset();
@@ -29,8 +31,34 @@ void BFieldBuilder::set_swapped() {
 void BFieldBuilder::push_back_part(const BPart &part) {
     m_parts.push_back(part);
 }
-void BFieldBuilder::push_back_export(const BExport &exp) {
-    m_exports.push_back(exp);
+
+void BFieldBuilder::export_new() {
+    m_new_export_name.reset();
+    m_new_export_parts.clear();
+    m_new_export_is_signed.reset();
+}
+void BFieldBuilder::export_set_name(std::string name) {
+    assert(!m_new_export_name);
+    m_new_export_name = std::move(name);
+}
+void BFieldBuilder::export_push_part(std::string part_name) {
+    m_new_export_parts.push_back(part_name);
+}
+void BFieldBuilder::export_set_signed(bool is_signed) {
+    assert(!m_new_export_is_signed);
+    m_new_export_is_signed = is_signed;
+}
+void BFieldBuilder::export_commit() {
+    assert(m_new_export_name);
+    assert(!m_new_export_parts.empty());
+    assert(m_new_export_is_signed);
+
+    auto e = BExport(*m_new_export_name, m_new_export_parts, *m_new_export_is_signed);
+    m_exports.push_back(std::move(e));
+}
+
+void BFieldBuilder::export_commit_passthrough(std::string part_name) {
+    m_exports.push_back(BExport(part_name));
 }
 
 BField BFieldBuilder::build() {

@@ -104,28 +104,31 @@ void SpecReader::extract_exports(boost::json::value element_exports) {
                 throw SpecException("Export object is missing a signed field");
             }
 
-            std::vector<std::string> export_part_names;
+            m_field_builder.export_new();
+
+            auto export_name = expect_value_string(
+                object.at("name"), "Expect export name to be a string");
+            m_field_builder.export_set_name(export_name);
+
             for (const auto &part_value :
                      expect_value_type(object.at("parts").try_as_array(),
                                        "Expect export parts to be an array")) {
                 auto export_part_name = expect_value_string(
                     part_value, "Expect export parts to contain all strings");
-                export_part_names.push_back(export_part_name);
+                m_field_builder.export_push_part(export_part_name);
             }
 
-            auto export_name = expect_value_string(
-                object.at("name"), "Expect export name to be a string");
+
             auto export_signed =
                 expect_value_type(object.at("signed").try_as_bool(),
                                   "Expect export signed to be an boolean");
-            m_field_builder.push_back_export(
-                BExport(export_name, export_part_names, export_signed));
-
+            m_field_builder.export_set_signed(export_signed);
+            m_field_builder.export_commit();
             break;
         }
         case boost::json::kind::string: {
             auto passthrough_name = boost_to_std_string(export_value.get_string());
-            m_field_builder.push_back_export(passthrough_name);
+            m_field_builder.export_commit_passthrough(passthrough_name);
             break;
         }
         default:

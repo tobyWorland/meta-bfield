@@ -16,6 +16,7 @@ class BFieldBuilder {
     std::optional<std::string> m_field_name;
     std::optional<unsigned> m_field_width;
     std::vector<BPart> m_parts;
+    std::vector<BExport> m_exports;
     bool m_swapped{false};
 
 public:
@@ -31,6 +32,7 @@ public:
     // parts in half and swap the halves instead.
     void set_swapped(); // TODO: Test
     void push_back_part(const BPart &part);
+    void push_back_export(const BExport &exp);
 
     BField build();
 };

@@ -29,6 +29,9 @@ void BFieldBuilder::set_swapped() {
 void BFieldBuilder::push_back_part(const BPart &part) {
     m_parts.push_back(part);
 }
+void BFieldBuilder::push_back_export(const BExport &exp) {
+    m_exports.push_back(exp);
+}
 
 BField BFieldBuilder::build() {
     if (!m_field_name) {
@@ -71,7 +74,7 @@ BField BFieldBuilder::build() {
         m_parts.swap(swapped_parts);
     }
 
-    BField result{m_field_name.value(), m_field_width.value(), m_parts};
+    BField result{m_field_name.value(), m_field_width.value(), m_parts, m_exports};
 
     reset();
 

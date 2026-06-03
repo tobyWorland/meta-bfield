@@ -26,10 +26,30 @@
     {
         "name": "nop_t2",
         "width": 32,
-		"swapped": true,
+        "swapped": true,
         "parts": [
-			"11110 0 111 01 0 1111",
-			"10 0 0 0 000 00000000"
+            "11110 0 111 01 0 1111",
+            "10 0 0 0 000 00000000"
+        ]
+    },
+    {
+        "name": "movw_t3",
+        "width": 32,
+        "swapped": true,
+        "parts": [
+            "11110",
+            {"name": "i", "width": 1},
+            "10 0 1 0 0",
+            {"name": "imm4", "width": 4},
+
+            "0",
+            {"name": "imm3", "width": 3},
+            {"name": "Rd", "width": 4},
+            {"name": "imm8", "width": 8}
+        ],
+        "export": [
+            "Rd",
+            {"name": "imm16", "parts": ["imm4", "i", "imm3", "imm8"], "signed": false}
         ]
     }
 ]

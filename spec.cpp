@@ -19,9 +19,13 @@ static T &expect_value_type(boost::system::result<T &> result,
     return result.unsafe_value();
 }
 
+static std::string boost_to_std_string(boost::json::string &string) {
+    return {string.begin(), string.end()};
+}
+
 static std::string expect_value_string(boost::json::value expected_string, const std::string &err) {
     auto boost_string = expect_value_type(expected_string.try_as_string(), err);
-    return {boost_string.begin(), boost_string.end()};
+    return boost_to_std_string(boost_string);
 }
 
 static boost::json::value json_from_stream(std::istream &stream) {
@@ -71,7 +75,7 @@ void SpecReader::extract_parts(boost::json::value element_parts) {
         }
         case boost::json::kind::string:
         {
-            auto reserved_binfield = std::string(part_value.get_string().data());
+            auto reserved_binfield = boost_to_std_string(part_value.get_string());
             m_field_builder.push_back_part(res_from_binstring(reserved_binfield));
             break;
         }
@@ -79,7 +83,56 @@ void SpecReader::extract_parts(boost::json::value element_parts) {
             throw SpecException(std::format("Expected string or object not: {}", boost::json::serialize(part_value)));
         }
     }
+}
 
+void SpecReader::extract_exports(boost::json::value element_exports) {
+    auto export_array = expect_value_type(element_exports.try_as_array(),
+                                        "Expected exports to be an array");
+
+    for (auto &export_value : export_array) {
+        switch (export_value.kind()) {
+        case boost::json::kind::object:
+        {
+            auto object = export_value.get_object();
+            if (!object.contains("name")) {
+                throw SpecException("Export object is missing a name field");
+            }
+            if (!object.contains("parts")) {
+                throw SpecException("Export object is missing a parts field");
+            }
+            if (!object.contains("signed")) {
+                throw SpecException("Export object is missing a signed field");
+            }
+
+            std::vector<std::string> export_part_names;
+            for (const auto &part_value :
+                     expect_value_type(object.at("parts").try_as_array(),
+                                       "Expect export parts to be an array")) {
+                auto export_part_name = expect_value_string(
+                    part_value, "Expect export parts to contain all strings");
+                export_part_names.push_back(export_part_name);
+            }
+
+            auto export_name = expect_value_string(
+                object.at("name"), "Expect export name to be a string");
+            auto export_signed =
+                expect_value_type(object.at("signed").try_as_bool(),
+                                  "Expect export signed to be an boolean");
+            m_field_builder.push_back_export(
+                BExport(export_name, export_part_names, export_signed));
+
+            break;
+        }
+        case boost::json::kind::string: {
+            auto passthrough_name = boost_to_std_string(export_value.get_string());
+            m_field_builder.push_back_export(passthrough_name);
+            break;
+        }
+        default:
+            throw SpecException(std::format("Expected string or object not: {}",
+                                            boost::json::serialize(export_value)));
+        }
+    }
 }
 
 void SpecReader::extract_field(boost::json::value element) {
@@ -106,6 +159,10 @@ void SpecReader::extract_field(boost::json::value element) {
                 if (swapped_bool) {
                     m_field_builder.set_swapped();
                 }
+            }},
+            {"export", [this](boost::json::value value) {
+                // std::cout << "Got export: " << value << '\n';
+                extract_exports(value);
             }},
         };
 

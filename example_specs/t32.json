@@ -33,7 +33,7 @@
         ]
     },
     {
-        "name": "mov_t3",
+        "name": "movw_t3",
         "width": 32,
         "swapped": true,
         "parts": [

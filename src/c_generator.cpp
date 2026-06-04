@@ -107,17 +107,17 @@ void body_match_from_field(std::fstream &source, const BField &field) {
 
     prototype_match_from_field(source, field);
     source << " {\n" << indent() << "return ";
-    for (const BPart &part : field.parts()) {
-        if (part.is_reserved()) {
+    for (const auto &part : field.parts()) {
+        if (part->is_reserved()) {
             if (!first) {
                 source << " && \\\n" << indent(2);
             }
             first = false;
-            unsigned shift = width_left - part.width();
+            unsigned shift = width_left - part->width();
             source << std::format("(((field >> {}) & ((1ULL << {}) - 1)) == {})",
-                                  shift, part.width(), part.reserved_value());
+                                  shift, part->width(), part->reserved_value());
             }
-        width_left -= part.width();
+        width_left -= part->width();
     }
     source << ";\n}\n";
 }
@@ -140,33 +140,32 @@ void body_encode_from_field(std::fstream &source, const BField &field) {
             source << indent(2) << "return 0;\n" << indent() << "}\n";
 
             // Create variable for parts that compose the export
-            for (const auto &pname : exp.part_names()) {
-                exported_parts.insert(pname);
-                const BPart &part = field.get_part_by_name(pname);
-                shift -= part.width();
-                source << indent() << "uint32_t " << pname << " = ";
+            for (const auto &part : exp.part_refs()) {
+                exported_parts.insert(part->name());
+                shift -= part->width();
+                source << indent() << "uint32_t " << part->name() << " = ";
                 source << std::format("((parts->{} >> {}) & ((1 << {}) - 1));\n",
-                                      exp.name(), shift, part.width());
+                                      exp.name(), shift, part->width());
             }
         }
     }
-    for (const BPart &part : field.parts()) {
-        if (!part.is_reserved()) {
-            unsigned shift = width_left - part.width();
-            bool is_export_part = exported_parts.contains(part.name());
+    for (const auto &part : field.parts()) {
+        if (!part->is_reserved()) {
+            unsigned shift = width_left - part->width();
+            bool is_export_part = exported_parts.contains(part->name());
             if (!is_export_part) {
                 // Check part does not exceed width and if it does then return 0 to signal error
                 source << indent() << std::format("if (parts->{} & ~((1ULL << {}) - 1)) {{\n",
-                                                  part.name(), part.width());
+                                                  part->name(), part->width());
                 source << indent(2) << "return 0;\n" << indent() << "}\n";
             }
 
             // Encode part
             source << indent() << std::format("encoded |= ({}{} << {});\n",
-                                              is_export_part ? "" : "parts->", part.name(), shift);
+                                              is_export_part ? "" : "parts->", part->name(), shift);
         }
 
-        width_left -= part.width();
+        width_left -= part->width();
     }
     source << indent() << "*out = encoded;\n";
     source << indent() << "return " << field.width() << ";\n";
@@ -180,20 +179,20 @@ void body_decode_from_field(std::fstream &source, const BField &field) {
     source << " {\n";
     source << indent() << struct_name_from_field(field) << " result = {};\n";
 
-    for (const BPart &part : field.parts()) {
-        if (!part.is_reserved()) {
-            unsigned shift = width_left - part.width();
-            if (field.is_part_exported(part.name())) {
+    for (const auto &part : field.parts()) {
+        if (!part->is_reserved()) {
+            unsigned shift = width_left - part->width();
+            if (field.is_part_exported(part->name())) {
                 source << indent()
                        << std::format("result.{} = ((field >> {}) & ((1ULL << " "{}) - 1));\n",
-                                      part.name(), shift, part.width());
+                                      part->name(), shift, part->width());
             } else {
                 source << indent()
                        << std::format("uint32_t {} = ((field >> {}) & ((1ULL << " "{}) - 1));\n",
-                                      part.name(), shift, part.width());
+                                      part->name(), shift, part->width());
             }
         }
-        width_left -= part.width();
+        width_left -= part->width();
     }
 
     for (const BExport &exp : field.exports()) {
@@ -201,10 +200,9 @@ void body_decode_from_field(std::fstream &source, const BField &field) {
             unsigned shift = field.get_export_width(exp);
             source << indent() << std::format("uint32_t {} = 0;\n", exp.name());
 
-            for (const std::string &part_name : exp.part_names()) {
-                const BPart &part = field.get_part_by_name(part_name);
-                shift -= part.width();
-                source << indent() << std::format("{} |= {} << {};\n", exp.name(), part_name, shift);
+            for (const auto &part : exp.part_refs()) {
+                shift -= part->width();
+                source << indent() << std::format("{} |= {} << {};\n", exp.name(), part->name(), shift);
             }
 
             source << indent() << std::format("result.{} = {};\n", exp.name(), exp.name());

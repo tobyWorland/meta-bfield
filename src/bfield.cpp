@@ -5,20 +5,20 @@
 #include <stdexcept>
 
 BField::BField(const std::string &name, unsigned width,
-               const std::vector<BPart> &parts,
-               const std::vector<BExport> &exports)
-    : m_name{name}, m_width{width}, m_parts{parts}, m_exports{exports} {
+               std::vector<std::unique_ptr<BPart>> &&parts,
+               std::vector<BExport> &&exports)
+    : m_name{name}, m_width{width}, m_parts{std::move(parts)}, m_exports{std::move(exports)} {
 
     if (m_exports.empty()) {
         // No exports - export all parts
         for (const auto &part : m_parts) {
-            m_exports.push_back(BExport(part.name()));
+            m_exports.push_back(BExport(part->name()));
         }
     }
 
     unsigned part_width_sum{0};
-    for (const BPart &part : m_parts) {
-        part_width_sum += part.width();
+    for (const auto &part : m_parts) {
+        part_width_sum += part->width();
     }
     if (part_width_sum != m_width) {
         throw std::invalid_argument(
@@ -34,15 +34,15 @@ const std::string &BField::name() const {
 unsigned BField::width() const {
     return m_width;
 }
-const std::vector<BPart> BField::parts() const {
+const std::vector<std::unique_ptr<BPart>> &BField::parts() const {
     return m_parts;
 }
 unsigned BField::reserved_value() const {
     unsigned value{0};
-    for (const BPart &part : m_parts) {
-        value <<= part.width();
-        if (part.is_reserved()) {
-            value |= part.reserved_value();
+    for (const auto &part : m_parts) {
+        value <<= part->width();
+        if (part->is_reserved()) {
+            value |= part->reserved_value();
         }
     }
     return value;
@@ -51,7 +51,7 @@ unsigned BField::reserved_value() const {
 bool BField::any_variable_parts() const {
     // TODO: Could be !m_exports.empty()?
     return std::any_of(m_parts.cbegin(), m_parts.cend(),
-                       [](auto &part) { return !part.is_reserved(); }
+                       [](auto &part) { return !part->is_reserved(); }
         );
 }
 
@@ -61,9 +61,9 @@ const std::vector<BExport> BField::exports() const {
 
 // TODO: Reference to BField should be included in BExport instead
 const BPart &BField::get_passthrough_part(const BExport &exp) const {
-    for (const BPart &part: m_parts) {
-        if (part.name() == exp.name()) {
-            return part;
+    for (const auto &part: m_parts) {
+        if (part->name() == exp.name()) {
+            return *part;
         }
     }
     assert(false);
@@ -74,21 +74,21 @@ const BPart &BField::get_passthrough_part(const BExport &exp) const {
 const BPart &BField::get_part_by_name(const std::string &part_name) const {
     auto found_part_it =
         std::find_if(m_parts.cbegin(), m_parts.cend(),
-                     [&part_name](const BPart &part) {
-                         return part.name() == part_name;
+                     [&part_name](const auto &part) {
+                         return part->name() == part_name;
                      });
     if (found_part_it == m_parts.cend()) {
         assert(false);
         std::terminate();
     }
-    return *found_part_it;
+    return **found_part_it;
 }
 
 // TODO: Should be a better way
 unsigned BField::get_export_width(const BExport &exp) const {
     unsigned width{0};
-    for (const auto &name : exp.part_names()) {
-        width += get_part_by_name(name).width();
+    for (const auto *part : exp.part_refs()) {
+        width += part->width();
     }
     return width;
 }

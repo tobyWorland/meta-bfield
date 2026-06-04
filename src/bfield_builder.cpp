@@ -29,12 +29,12 @@ void BFieldBuilder::set_swapped() {
     m_swapped = true;
 }
 void BFieldBuilder::push_back_part(const BPart &part) {
-    m_parts.push_back(part);
+    m_parts.push_back(std::make_unique<BPart>(part));
 }
 
 void BFieldBuilder::export_new() {
     m_new_export_name.reset();
-    m_new_export_parts.clear();
+    m_new_export_part_refs.clear();
     m_new_export_is_signed.reset();
 }
 void BFieldBuilder::export_set_name(std::string name) {
@@ -42,7 +42,14 @@ void BFieldBuilder::export_set_name(std::string name) {
     m_new_export_name = std::move(name);
 }
 void BFieldBuilder::export_push_part(std::string part_name) {
-    m_new_export_parts.push_back(part_name);
+    auto it = std::find_if(m_parts.cbegin(), m_parts.cend(),
+                           [&part_name](const auto &part) { return part->name() == part_name; });
+
+    if (it == m_parts.cend()) {
+        throw BFieldBuilderError(std::format("Cannot export part '{}' as it doesn't exist.", part_name));
+    }
+
+    m_new_export_part_refs.push_back(it->get());
 }
 void BFieldBuilder::export_set_signed(bool is_signed) {
     assert(!m_new_export_is_signed);
@@ -50,10 +57,10 @@ void BFieldBuilder::export_set_signed(bool is_signed) {
 }
 void BFieldBuilder::export_commit() {
     assert(m_new_export_name);
-    assert(!m_new_export_parts.empty());
+    assert(!m_new_export_part_refs.empty());
     assert(m_new_export_is_signed);
 
-    auto e = BExport(*m_new_export_name, m_new_export_parts, *m_new_export_is_signed);
+    auto e = BExport(*m_new_export_name, m_new_export_part_refs, *m_new_export_is_signed);
     m_exports.push_back(std::move(e));
 }
 
@@ -70,16 +77,19 @@ BField BFieldBuilder::build() {
         throw BFieldBuilderError("Width missing");
     }
 
+    export_new(); // Clear export in progress so parts don't contain stale pointers
+
     // TODO: Write test
     if (m_swapped) {
-        std::vector<BPart> swapped_parts;
+        std::vector<std::unique_ptr<BPart>> swapped_parts;
         auto half_way_it = m_parts.begin();
         unsigned half_way_width{};
 
         swapped_parts.reserve(m_parts.size());
 
         for (; half_way_it != m_parts.cend(); ++half_way_it) {
-            half_way_width += half_way_it->width();
+            const BPart *part = half_way_it->get();
+            half_way_width += part->width();
 
             if (half_way_width > (m_field_width.value() / 2)) {
                 throw BFieldBuilderError("Parts can not be split evenly");
@@ -102,7 +112,7 @@ BField BFieldBuilder::build() {
         m_parts.swap(swapped_parts);
     }
 
-    BField result{m_field_name.value(), m_field_width.value(), m_parts, m_exports};
+    BField result{m_field_name.value(), m_field_width.value(), std::move(m_parts), std::move(m_exports)};
 
     reset();
 

@@ -3,23 +3,24 @@
 #include "bexport.hpp"
 #include "bpart.hpp"
 
+#include <memory>
 #include <string>
 #include <vector>
 
 class BField {
-    const std::string m_name;
-    const unsigned m_width;
-    std::vector<BPart> m_parts;
+    std::string m_name;
+    unsigned m_width;
+    std::vector<std::unique_ptr<BPart>> m_parts;
     std::vector<BExport> m_exports;
 
   public:
     BField(const std::string &name, unsigned width,
-           const std::vector<BPart> &parts,
-           const std::vector<BExport> &exports = {});
+           std::vector<std::unique_ptr<BPart>> &&parts,
+           std::vector<BExport> &&exports);
 
     const std::string &name() const;
     unsigned width() const;
-    const std::vector<BPart> parts() const;
+    const std::vector<std::unique_ptr<BPart>> &parts() const;
     unsigned reserved_value() const; // TODO: Test
     bool any_variable_parts() const;
     const std::vector<BExport> exports() const;

@@ -15,6 +15,13 @@ BExport::BExport(const std::string &name, const std::vector<const BPart *> &part
 const std::string &BExport::name() const {
     return m_name;
 }
+unsigned BExport::width() const {
+    unsigned width{0};
+    for (const auto *part : part_refs()) {
+        width += part->width();
+    }
+    return width;
+}
 const std::vector<const BPart*> BExport::part_refs() const {
     return m_part_refs;
 }

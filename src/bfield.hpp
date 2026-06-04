@@ -24,6 +24,5 @@ class BField {
     unsigned reserved_value() const; // TODO: Test
     bool any_variable_parts() const;
     const std::vector<BExport> exports() const;
-    unsigned get_export_width(const BExport &exp) const;
     bool is_part_exported(const std::string &part_name) const;
 };

@@ -59,15 +59,6 @@ const std::vector<BExport> BField::exports() const {
     return m_exports;
 }
 
-// TODO: Should be a better way
-unsigned BField::get_export_width(const BExport &exp) const {
-    unsigned width{0};
-    for (const auto *part : exp.part_refs()) {
-        width += part->width();
-    }
-    return width;
-}
-
 bool BField::is_part_exported(const std::string &part_name) const {
     for (const auto &exp : m_exports) {
         if (exp.name() == part_name) {

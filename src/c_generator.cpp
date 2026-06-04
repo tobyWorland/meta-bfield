@@ -132,7 +132,7 @@ void body_encode_from_field(std::fstream &source, const BField &field) {
            << std::hex << field.reserved_value() << std::dec << ";\n";
     for (const BExport &exp : field.exports()) {
         if (!exp.is_passthrough()) {
-            unsigned shift = field.get_export_width(exp);
+            unsigned shift = exp.width();
 
             // Check export does not exceed width and if it does then return 0 to signal error
             source << indent() << std::format("if (parts->{} & ~((1ULL << {}) - 1)) {{\n",
@@ -197,7 +197,7 @@ void body_decode_from_field(std::fstream &source, const BField &field) {
 
     for (const BExport &exp : field.exports()) {
         if (!exp.is_passthrough()) {
-            unsigned shift = field.get_export_width(exp);
+            unsigned shift = exp.width();
             source << indent() << std::format("uint32_t {} = 0;\n", exp.name());
 
             for (const auto &part : exp.part_refs()) {

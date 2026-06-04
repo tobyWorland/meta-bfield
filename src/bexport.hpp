@@ -16,6 +16,7 @@ public:
     BExport(const std::string &name, const std::vector<const BPart*> &part_refs, bool is_signed);
 
     const std::string &name() const;
+    unsigned width() const;
     const std::vector<const BPart*> part_refs() const;
     bool is_passthrough() const;
     bool is_signed() const;

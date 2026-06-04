@@ -33,6 +33,15 @@
         ]
     },
     {
+        "name": "mov_t1",
+        "width": 16,
+        "parts": [
+            "001 00",
+            {"name": "Rd", "width": 3},
+            {"name": "imm8", "width": 8}
+        ]
+    },
+    {
         "name": "movw_t3",
         "width": 32,
         "swapped": true,

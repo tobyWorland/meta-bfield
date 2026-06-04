@@ -26,8 +26,6 @@ add_executable(meta_bfield
 )
 target_link_libraries(meta_bfield bfield)
 
-if(false)
 enable_testing()
 add_subdirectory(third_party/googletest EXCLUDE_FROM_ALL)
 add_subdirectory(tests)
-endif()

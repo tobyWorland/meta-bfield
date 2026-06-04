@@ -60,5 +60,13 @@
             "Rd",
             {"name": "imm16", "parts": ["imm4", "i", "imm3", "imm8"], "signed": false}
         ]
+    },
+    {
+        "name": "svc_t1",
+        "width": 16,
+        "parts": [
+            "1101 1111",
+            {"name": "imm8", "width": 8}
+        ]
     }
 ]

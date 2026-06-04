@@ -12,7 +12,14 @@ BField::BField(const std::string &name, unsigned width,
     if (m_exports.empty()) {
         // No exports - export all parts
         for (const auto &part : m_parts) {
-            m_exports.push_back(BExport(&*part));
+            m_exports.push_back(BExport(part.get()));
+            m_exported_parts.insert(part.get());
+        }
+    } else {
+        for (const auto &exp : m_exports) {
+            if (exp.is_passthrough()) {
+                m_exported_parts.insert(exp.part_refs()[0]);
+            }
         }
     }
 
@@ -59,11 +66,6 @@ const std::vector<BExport> BField::exports() const {
     return m_exports;
 }
 
-bool BField::is_part_exported(const std::string &part_name) const {
-    for (const auto &exp : m_exports) {
-        if (exp.name() == part_name) {
-            return true;
-        }
-    }
-    return false;
+bool BField::is_part_exported(const BPart *part) const {
+    return m_exported_parts.contains(part);
 }

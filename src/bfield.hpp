@@ -5,6 +5,7 @@
 
 #include <memory>
 #include <string>
+#include <unordered_set>
 #include <vector>
 
 class BField {
@@ -12,6 +13,7 @@ class BField {
     unsigned m_width;
     std::vector<std::unique_ptr<BPart>> m_parts;
     std::vector<BExport> m_exports;
+    std::unordered_set<const BPart *> m_exported_parts;
 
   public:
     BField(const std::string &name, unsigned width,
@@ -24,5 +26,5 @@ class BField {
     unsigned reserved_value() const; // TODO: Test
     bool any_variable_parts() const;
     const std::vector<BExport> exports() const;
-    bool is_part_exported(const std::string &part_name) const;
+    bool is_part_exported(const BPart *part) const;
 };

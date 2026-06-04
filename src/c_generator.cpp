@@ -182,7 +182,7 @@ void body_decode_from_field(std::fstream &source, const BField &field) {
     for (const auto &part : field.parts()) {
         if (!part->is_reserved()) {
             unsigned shift = width_left - part->width();
-            if (field.is_part_exported(part->name())) {
+            if (field.is_part_exported(part.get())) {
                 source << indent()
                        << std::format("result.{} = ((field >> {}) & ((1ULL << " "{}) - 1));\n",
                                       part->name(), shift, part->width());

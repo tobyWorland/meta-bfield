@@ -8,9 +8,9 @@
 static void dump_field(const BField &field) {
     std::cout << field.name() << " " << field.width() << '\n';
     for (auto &part : field.parts()) {
-        std::cout << part.name() << " " << part.width();
-        if (part.is_reserved()) {
-            std::cout << " 0x" << std::hex << part.reserved_value();
+        std::cout << part->name() << " " << part->width();
+        if (part->is_reserved()) {
+            std::cout << " 0x" << std::hex << part->reserved_value();
         }
         std::cout << '\n';
     }

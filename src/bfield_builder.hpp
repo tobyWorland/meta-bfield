@@ -3,6 +3,8 @@
 #include "bfield.hpp"
 
 #include <exception>
+#include <memory>
+#include <optional>
 
 class BFieldBuilderError : public std::exception {
     std::string m_message;
@@ -15,9 +17,13 @@ public:
 class BFieldBuilder {
     std::optional<std::string> m_field_name;
     std::optional<unsigned> m_field_width;
-    std::vector<BPart> m_parts;
+    std::vector<std::unique_ptr<BPart>> m_parts;
     std::vector<BExport> m_exports;
     bool m_swapped{false};
+
+    std::optional<std::string> m_new_export_name;
+    std::vector<const BPart*> m_new_export_part_refs;
+    std::optional<bool> m_new_export_is_signed;
 
 public:
     void reset();
@@ -32,7 +38,14 @@ public:
     // parts in half and swap the halves instead.
     void set_swapped(); // TODO: Test
     void push_back_part(const BPart &part);
-    void push_back_export(const BExport &exp);
+
+    void export_new();
+    void export_set_name(std::string name);
+    void export_push_part(std::string part_name);
+    void export_set_signed(bool is_signed);
+    void export_commit();
+
+    void export_commit_passthrough(std::string part_name);
 
     BField build();
 };

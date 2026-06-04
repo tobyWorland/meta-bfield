@@ -10,15 +10,19 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 find_package(Boost REQUIRED COMPONENTS json)
 
 add_library(bfield OBJECT
-	bfield.cpp
-	bfield_builder.cpp
-	c_generator.cpp
-	spec.cpp
+    src/bexport.cpp
+    src/bfield.cpp
+    src/bfield_builder.cpp
+    src/bpart.cpp
+    src/c_generator.cpp
+    src/spec.cpp
+    src/util.cpp
 )
 target_link_libraries(bfield Boost::boost Boost::json)
+target_include_directories(bfield INTERFACE src)
 
 add_executable(meta_bfield
-	meta_bfield.cpp
+    src/meta_bfield.cpp
 )
 target_link_libraries(meta_bfield bfield)
 

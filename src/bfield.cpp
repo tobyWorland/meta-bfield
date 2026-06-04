@@ -12,7 +12,7 @@ BField::BField(const std::string &name, unsigned width,
     if (m_exports.empty()) {
         // No exports - export all parts
         for (const auto &part : m_parts) {
-            m_exports.push_back(BExport(part->name()));
+            m_exports.push_back(BExport(&*part));
         }
     }
 
@@ -57,31 +57,6 @@ bool BField::any_variable_parts() const {
 
 const std::vector<BExport> BField::exports() const {
     return m_exports;
-}
-
-// TODO: Reference to BField should be included in BExport instead
-const BPart &BField::get_passthrough_part(const BExport &exp) const {
-    for (const auto &part: m_parts) {
-        if (part->name() == exp.name()) {
-            return *part;
-        }
-    }
-    assert(false);
-    std::terminate();
-}
-
-// TODO: should be a better way
-const BPart &BField::get_part_by_name(const std::string &part_name) const {
-    auto found_part_it =
-        std::find_if(m_parts.cbegin(), m_parts.cend(),
-                     [&part_name](const auto &part) {
-                         return part->name() == part_name;
-                     });
-    if (found_part_it == m_parts.cend()) {
-        assert(false);
-        std::terminate();
-    }
-    return **found_part_it;
 }
 
 // TODO: Should be a better way

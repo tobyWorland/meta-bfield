@@ -65,7 +65,14 @@ void BFieldBuilder::export_commit() {
 }
 
 void BFieldBuilder::export_commit_passthrough(std::string part_name) {
-    m_exports.push_back(BExport(part_name));
+    auto it = std::find_if(m_parts.cbegin(), m_parts.cend(),
+                           [&part_name](const auto &part) { return part->name() == part_name; });
+
+    if (it == m_parts.cend()) {
+        throw BFieldBuilderError(std::format("Cannot export pass-through part '{}' as it doesn't exist.", part_name));
+    }
+
+    m_exports.push_back(BExport(it->get()));
 }
 
 BField BFieldBuilder::build() {

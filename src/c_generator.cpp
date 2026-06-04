@@ -35,13 +35,13 @@ void struct_from_field(std::fstream &file, const BField &field) {
     file << struct_name_from_field(field) << " {\n";
     for (const BExport &exp : field.exports()) {
         if (exp.is_passthrough()) {
-            const BPart &part = field.get_passthrough_part(exp);
-            if (part.is_reserved())
+            const BPart *part = exp.part_refs()[0];
+            if (part->is_reserved())
                 continue;
 
-            assert(part.width() <= 32);
+            assert(part->width() <= 32);
             // TODO: handle if signed
-            file << indent() << type_from_width(part.width()) << " " << part.name() << ";\n";
+            file << indent() << type_from_width(part->width()) << " " << part->name() << ";\n";
         } else {
             assert(!exp.is_signed());
             // TODO: handle if signed

@@ -3,24 +3,23 @@
 #include <cassert>
 
 BExport::BExport(const BPart *passthrough_part)
-    : m_name{passthrough_part->name()}, m_part_refs{passthrough_part},
+    : m_name{passthrough_part->name()}, m_width{passthrough_part->width()}, m_part_refs{passthrough_part},
       m_signed{}, m_passthrough{true} {}
 BExport::BExport(const std::string &name, const std::vector<const BPart *> &part_refs, bool is_signed)
-    : m_name{name}, m_part_refs{part_refs}, m_signed{is_signed},
+    : m_name{name}, m_width{0}, m_part_refs{part_refs}, m_signed{is_signed},
       m_passthrough{false} {
     assert(!m_name.empty());
     assert(!m_part_refs.empty());
+    for (const auto *part : m_part_refs) {
+        m_width += part->width();
+    }
 }
 
 const std::string &BExport::name() const {
     return m_name;
 }
 unsigned BExport::width() const {
-    unsigned width{0};
-    for (const auto *part : part_refs()) {
-        width += part->width();
-    }
-    return width;
+    return m_width;
 }
 const std::vector<const BPart*> BExport::part_refs() const {
     return m_part_refs;

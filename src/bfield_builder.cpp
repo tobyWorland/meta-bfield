@@ -1,10 +1,7 @@
 #include "bfield_builder.hpp"
 
-#include <cassert>
 #include <format>
 #include <iostream>
-
-// TODO: Make asserts into throws
 
 void BFieldBuilder::reset() {
     m_field_name.reset();
@@ -38,7 +35,10 @@ void BFieldBuilder::export_new() {
     m_new_export_is_signed.reset();
 }
 void BFieldBuilder::export_set_name(std::string name) {
-    assert(!m_new_export_name);
+    if (m_new_export_name) {
+        throw BFieldBuilderError(std::format("{}({}) called when name is already set to {}",
+                                             __func__, name, *m_new_export_name));
+    }
     m_new_export_name = std::move(name);
 }
 void BFieldBuilder::export_push_part(std::string part_name) {
@@ -52,13 +52,22 @@ void BFieldBuilder::export_push_part(std::string part_name) {
     m_new_export_part_refs.push_back(it->get());
 }
 void BFieldBuilder::export_set_signed(bool is_signed) {
-    assert(!m_new_export_is_signed);
+    if (m_new_export_is_signed) {
+        throw BFieldBuilderError(std::format("{}({}) called when is_signed is already set to {}",
+                                             __func__, is_signed, *m_new_export_is_signed));
+    }
     m_new_export_is_signed = is_signed;
 }
 void BFieldBuilder::export_commit() {
-    assert(m_new_export_name);
-    assert(!m_new_export_part_refs.empty());
-    assert(m_new_export_is_signed);
+    if (!m_new_export_name) {
+        throw BFieldBuilderError("Attempt to export without an export name");
+    }
+    if (m_new_export_part_refs.empty()) {
+        throw BFieldBuilderError("Attempt to export without any parts");
+    }
+    if (!m_new_export_is_signed) {
+        throw BFieldBuilderError("Attempt to export without is signed set");
+    }
 
     auto e = BExport(*m_new_export_name, m_new_export_part_refs, *m_new_export_is_signed);
     m_exports.push_back(std::move(e));

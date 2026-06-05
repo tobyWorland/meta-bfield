@@ -16,9 +16,17 @@ static void dump_field(const BField &field) {
     }
 }
 
-int main() {
+int main(int argc, char **argv) {
+    if (argc != 3) {
+        std::cerr << "Usage: " << argv[0] << " <spec> <outpath>\n";
+        return 1;
+    }
+
+    std::string input_spec_path = argv[1];
+    std::string output_path = argv[2];
+
     SpecReader spec_reader;
-    auto fields = spec_reader.read_from_spec("example_specs/t32.json");
+    auto fields = spec_reader.read_from_spec(argv[1]);
 
 #if 0
     for (const auto &field: fields) {
@@ -26,7 +34,6 @@ int main() {
     }
 #endif
 
-    std::string output_path = "build/out/t32_encoding";
     if (generate_fields(output_path, fields)) {
         std::cout << "Generate successful\n";
     } else {

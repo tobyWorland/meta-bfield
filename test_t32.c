@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
-#include "build/out/t32_encoding.h"
+#include "build/t32_encoding.h"
 
 int main() {
     uint16_t bx_lr = 0x4770;

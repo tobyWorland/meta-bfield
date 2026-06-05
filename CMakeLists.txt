@@ -29,3 +29,15 @@ target_link_libraries(meta_bfield bfield)
 enable_testing()
 add_subdirectory(third_party/googletest EXCLUDE_FROM_ALL)
 add_subdirectory(tests)
+
+add_custom_command(
+	OUTPUT "${CMAKE_BINARY_DIR}/t32_encoding.c"
+	COMMAND "${CMAKE_BINARY_DIR}/meta_bfield"
+			"${CMAKE_SOURCE_DIR}/example_specs/t32.json"
+			"${CMAKE_BINARY_DIR}/t32_encoding"
+)
+
+add_executable(test_t32
+	test_t32.c
+	"${CMAKE_BINARY_DIR}/t32_encoding.c"
+)

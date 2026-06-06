@@ -1,4 +1,21 @@
 [
+	{
+		"name": "b_cond_t1_noit",
+		"width": 16,
+		"parts": [
+			"1101",
+			{"name": "cond", "width": 4},
+			{"name": "imm8", "width": 8}
+		]
+	},
+	{
+		"name": "b_t2",
+		"width": 16,
+		"parts": [
+			"11100",
+			{"name": "imm11", "width": 11}
+		]
+	},
     {
         "name": "bkpt_t1",
         "width": 16,

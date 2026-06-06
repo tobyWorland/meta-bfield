@@ -33,7 +33,7 @@
         ]
     },
     {
-        "name": "mov_t1",
+        "name": "movs_i_t1",
         "width": 16,
         "parts": [
             "001 00",
@@ -42,7 +42,7 @@
         ]
     },
     {
-        "name": "movw_t3",
+        "name": "movw_i_t3",
         "width": 32,
         "swapped": true,
         "parts": [

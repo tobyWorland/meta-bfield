@@ -26,18 +26,18 @@ int main() {
 	printf("NOP.W: %04X %04X\n", nop[0], nop[1]);
 
 	uint16_t movwt3[2];
-	struct movw_t3_parts movw_t3_parts = {
+	struct movw_i_t3_parts movw_i_t3_parts = {
 		.Rd = 4,
 		.imm16 = 21
 	};
-	encode_movw_t3((uint32_t*)movwt3, &movw_t3_parts);
+	encode_movw_i_t3((uint32_t*)movwt3, &movw_i_t3_parts);
 	printf("MOVW: %04X %04X\n", movwt3[0], movwt3[1]);
 
-	memset(&movw_t3_parts, '\0', sizeof(movw_t3_parts));
-	printf("Should both be zero: %u %u\n", movw_t3_parts.Rd, movw_t3_parts.imm16);
+	memset(&movw_i_t3_parts, '\0', sizeof(movw_i_t3_parts));
+	printf("Should both be zero: %u %u\n", movw_i_t3_parts.Rd, movw_i_t3_parts.imm16);
 
-	movw_t3_parts = decode_movw_t3(*(uint32_t*)movwt3);
-	printf("Rd: %u imm16: %u\n", movw_t3_parts.Rd, movw_t3_parts.imm16);
+	movw_i_t3_parts = decode_movw_i_t3(*(uint32_t*)movwt3);
+	printf("Rd: %u imm16: %u\n", movw_i_t3_parts.Rd, movw_i_t3_parts.imm16);
 
     return 0;
 }

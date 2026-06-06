@@ -62,6 +62,44 @@
         ]
     },
     {
+        "name": "mov_r_t1",
+        "width": 16,
+        "parts": [
+            "010001 10",
+            {"name": "Rd_3", "width": 1},
+            {"name": "Rm", "width": 4},
+            {"name": "Rd_2_0", "width": 3}
+        ],
+        "export": [
+            "Rm",
+            {"name": "Rd", "parts": ["Rd_3", "Rd_2_0"], "signed": false}
+        ]
+    },
+    {
+        "name": "movs_r_t2_noit",
+        "width": 16,
+        "parts": [
+            "000 00 00000",
+            {"name": "Rm", "width": 3},
+            {"name": "Rd", "width": 3}
+        ]
+    },
+    {
+        "name": "mov_r_t3_opt_s",
+        "width": 32,
+        "swapped": true,
+        "parts": [
+            "11101 01 0010",
+            {"name": "setflags", "width": 1, "signed": false},
+            "1111",
+
+            "0 000",
+            {"name": "Rd", "width": 4, "signed": false},
+            "0000",
+            {"name": "Rm", "width": 4, "signed": false}
+        ]
+    },
+    {
         "name": "svc_t1",
         "width": 16,
         "parts": [

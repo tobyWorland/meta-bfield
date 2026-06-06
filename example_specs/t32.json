@@ -106,5 +106,25 @@
             "1101 1111",
             {"name": "imm8", "width": 8}
         ]
+    },
+    {
+        "name": "udf_t1",
+        "width": 16,
+        "parts": [
+            "1101 1110",
+            {"name": "imm8", "width": 8}
+        ]
+    },
+    {
+        "name": "udf_t2",
+        "width": 32,
+        "swapped": true,
+        "parts": [
+            "111 10 1111111",
+            {"name": "imm4", "width": 4},
+
+            "1 010",
+            {"name": "imm12", "width": 12}
+        ]
     }
 ]

@@ -1,21 +1,72 @@
 [
-	{
-		"name": "b_cond_t1_noit",
-		"width": 16,
-		"parts": [
-			"1101",
-			{"name": "cond", "width": 4},
-			{"name": "imm8", "width": 8}
-		]
-	},
-	{
-		"name": "b_t2",
-		"width": 16,
-		"parts": [
-			"11100",
-			{"name": "imm11", "width": 11}
-		]
-	},
+    {
+        "name": "b_cond_t1_noit",
+        "width": 16,
+        "parts": [
+            "1101",
+            {"name": "cond", "width": 4},
+            {"name": "imm8", "width": 8}
+        ],
+        "export": [
+            "cond",
+            {"name": "simm8", "parts": ["imm8"], "signed": true}
+        ]
+    },
+    {
+        "name": "b_t2",
+        "width": 16,
+        "parts": [
+            "11100",
+            {"name": "imm11", "width": 11, "signed": true}
+        ],
+        "export": [
+            {"name": "simm11", "parts": ["imm11"], "signed": true}
+        ]
+    },
+    {
+        "name": "b_cond_t3_noit",
+        "width": 32,
+        "swapped": true,
+        "parts": [
+            "11110",
+            {"name": "s", "width": 1},
+            {"name": "cond", "width": 4},
+            {"name": "imm6", "width": 6},
+
+            "10",
+            {"name": "j1", "width": 1},
+            "0",
+            {"name": "j2", "width": 1},
+            {"name": "imm11", "width": 11}
+        ],
+        "export": [
+            "cond",
+            {"name": "simm21", "parts": ["s", "j2", "j1", "imm6", "imm11", "0"], "signed": true}
+        ]
+    },
+    {
+        "name": "b_t4",
+        "width": 32,
+        "swapped": true,
+        "parts": [
+            "11110",
+            {"name": "s", "width": 1},
+            {"name": "imm10", "width": 10},
+
+            "10",
+            {"name": "j1", "width": 1},
+            "1",
+            {"name": "j2", "width": 1},
+            {"name": "imm11", "width": 11}
+        ],
+        "expr": [
+            {"name": "i1", "part": "j1", "encode": "~$ ^ s", "decode": "~($ ^ s"},
+            {"name": "i2", "part": "j2", "encode": "~$ ^ s", "decode": "~($ ^ s"}
+        ],
+        "export": [
+            {"name": "simm25", "parts": ["s", "$i1", "$i2", "imm10", "imm11", "0"], "signed": true}
+        ]
+    },
     {
         "name": "bkpt_t1",
         "width": 16,

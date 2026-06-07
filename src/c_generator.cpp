@@ -270,6 +270,9 @@ bool generate_fields(const std::string output_basepath, const std::vector<BField
         return false;
     }
 
+    header << "// AUTOGEN - DO NOT EDIT\n\n";
+    source << "// AUTOGEN - DO NOT EDIT\n\n";
+
     header << "#pragma once\n\n" << "#include <stdbool.h>\n#include <stdint.h>\n\n";
     source << "#include \"" << header_file << "\"\n";
 

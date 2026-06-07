@@ -32,6 +32,7 @@ add_subdirectory(tests)
 
 add_custom_command(
 	OUTPUT "${CMAKE_BINARY_DIR}/t32_encoding.c"
+	DEPENDS meta_bfield
 	COMMAND "${CMAKE_BINARY_DIR}/meta_bfield"
 			"${CMAKE_SOURCE_DIR}/example_specs/t32.json"
 			"${CMAKE_BINARY_DIR}/t32_encoding"

@@ -1,5 +1,7 @@
 #include "c_generator.hpp"
 
+#include "preludes.hpp"
+
 #include <cassert>
 #include <filesystem>
 #include <format>
@@ -268,7 +270,9 @@ bool generate_fields(const std::string output_basepath, const std::vector<BField
     }
 
     header << "#pragma once\n\n" << "#include <stdbool.h>\n#include <stdint.h>\n\n";
-    source << "#include \"" << header_file << "\"\n\n";
+    source << "#include \"" << header_file << "\"\n";
+
+    source << c_prelude;
 
     generate_header(header, fields);
     generate_source(source, fields);

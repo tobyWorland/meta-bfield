@@ -9,6 +9,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 find_package(Boost REQUIRED COMPONENTS json)
 
+add_subdirectory(preludes)
+
 add_library(bfield OBJECT
     src/bexport.cpp
     src/bfield.cpp
@@ -18,7 +20,7 @@ add_library(bfield OBJECT
     src/spec.cpp
     src/util.cpp
 )
-target_link_libraries(bfield Boost::boost Boost::json)
+target_link_libraries(bfield Boost::boost Boost::json preludes)
 target_include_directories(bfield INTERFACE src)
 
 add_executable(meta_bfield
@@ -27,7 +29,7 @@ add_executable(meta_bfield
 target_link_libraries(meta_bfield bfield)
 
 add_executable(demo_prelude
-	demo_prelude.c
+    demo_prelude.c
 )
 
 enable_testing()
@@ -35,14 +37,14 @@ add_subdirectory(third_party/googletest EXCLUDE_FROM_ALL)
 add_subdirectory(tests)
 
 add_custom_command(
-	OUTPUT "${CMAKE_BINARY_DIR}/t32_encoding.c"
-	DEPENDS meta_bfield
-	COMMAND "${CMAKE_BINARY_DIR}/meta_bfield"
-			"${CMAKE_SOURCE_DIR}/example_specs/t32.json"
-			"${CMAKE_BINARY_DIR}/t32_encoding"
+    OUTPUT "${CMAKE_BINARY_DIR}/t32_encoding.c"
+    DEPENDS meta_bfield
+    COMMAND "${CMAKE_BINARY_DIR}/meta_bfield"
+            "${CMAKE_SOURCE_DIR}/example_specs/t32.json"
+            "${CMAKE_BINARY_DIR}/t32_encoding"
 )
 
 add_executable(test_t32
-	test_t32.c
-	"${CMAKE_BINARY_DIR}/t32_encoding.c"
+    test_t32.c
+    "${CMAKE_BINARY_DIR}/t32_encoding.c"
 )

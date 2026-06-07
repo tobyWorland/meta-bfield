@@ -19,7 +19,7 @@ void shrink(int32_t x, bool sign, unsigned width) {
         }
     }
 
-    uint16_t x_;
+    int32_t x_;
     if (sign) {
         x_ = SIGNED_SHRINK_TO(x, width);
     } else {
@@ -27,7 +27,16 @@ void shrink(int32_t x, bool sign, unsigned width) {
     }
 
     // +1 to make to make it the shrinking more obvious
-    printf("==> %0*b\n", width + 1, x_);
+    printf("SHRINK %0*b", width + 1, x_);
+
+    int32_t x__;
+    if (sign) {
+        x__ = SIGNED_EXTEND(x_, width);
+    } else {
+        x__ = x_;
+    }
+
+    printf(" EXTEND (%+d) %032b\n", x__, x__);
 }
 
 void f(bool s, unsigned w, int min, int max) {

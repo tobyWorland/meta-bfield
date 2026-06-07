@@ -85,3 +85,22 @@ TEST(c_prelude, bit_signed_shrink) {
 		EXPECT_EQ(SIGNED_SHRINK_TO(pair.first, 3), pair.second);
 	}
 }
+
+TEST(c_prelude, sign_bit_set) {
+    EXPECT_EQ(SIGN_BIT_SET(0b000, 3), false);
+    EXPECT_EQ(SIGN_BIT_SET(0b100, 3), true);
+
+    EXPECT_EQ(SIGN_BIT_SET(0b011, 3), false);
+    EXPECT_EQ(SIGN_BIT_SET(0b111, 3), true);
+
+    EXPECT_EQ(SIGN_BIT_SET(0b00000, 5), false);
+    EXPECT_EQ(SIGN_BIT_SET(0b10000, 5), true);
+
+    EXPECT_EQ(SIGN_BIT_SET(0b01100, 5), false);
+    EXPECT_EQ(SIGN_BIT_SET(0b11100, 5), true);
+}
+
+TEST(c_prelude, signed_extend) {
+    EXPECT_EQ(SIGNED_EXTEND(0b011, 3), 3);
+    EXPECT_EQ(SIGNED_EXTEND(0b111, 3), -1);
+}

@@ -22,6 +22,7 @@ class SpecReader {
     void extract_parts(boost::json::value element_parts);
     void extract_exports(boost::json::value element_exports);
     void extract_field(boost::json::value element);
+    void extract_exprs(boost::json::value element_exprs);
     std::vector<BField> fields_from_json(boost::json::value &value);
   public:
     std::vector<BField> read_from_spec(std::filesystem::path spec_path);

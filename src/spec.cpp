@@ -141,6 +141,36 @@ void SpecReader::extract_exports(boost::json::value element_exports) {
     }
 }
 
+void SpecReader::extract_exprs(boost::json::value element_exprs) {
+    auto export_array = expect_value_type(element_exprs.try_as_array(),
+                                        "Expected exprs to be an array");
+
+    for (auto &export_expr : export_array) {
+        auto expr_obj = expect_value_type(export_expr.try_as_object(),
+                                          "Expect expr to be an object");
+
+        if (!expr_obj.contains("name")) {
+            throw SpecException("Expr object is missing a name field");
+        }
+        if (!expr_obj.contains("part")) {
+            throw SpecException("Expr object is missing a part field");
+        }
+        if (!expr_obj.contains("encode")) {
+            throw SpecException("Expr object is missing a encode field");
+        }
+        if (!expr_obj.contains("decode")) {
+            throw SpecException("Expr object is missing a decode field");
+        }
+
+        auto export_name = expect_value_string(expr_obj.at("name"), "Expect expr name to be a string");
+        auto export_part = expect_value_string(expr_obj.at("part"), "Expect expr part to be a string");
+        auto export_encode = expect_value_string(expr_obj.at("encode"), "Expect expr encode to be a string");
+        auto export_decode = expect_value_string(expr_obj.at("decode"), "Expect expr decode to be a string");
+
+        m_field_builder.push_back_expr(export_name, export_part, export_encode, export_decode);
+    }
+}
+
 void SpecReader::extract_field(boost::json::value element) {
     auto obj = expect_value_type(element.try_as_object(), "Expected top level array to contain field objects");
     for (auto &pair: obj) {
@@ -171,7 +201,8 @@ void SpecReader::extract_field(boost::json::value element) {
                 extract_exports(value);
             }},
             {"expr", [this](boost::json::value value) {
-                std::cout << "FIXME: Ignoring expr\n";
+                // std::cout << "Got expr: " << value << '\n';
+                extract_exprs(value);
             }}
         };
 

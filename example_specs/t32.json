@@ -54,17 +54,13 @@
             {"name": "imm10", "width": 10},
 
             "10",
-            {"name": "j1", "width": 1},
+            {"name": "i1", "width": 1, "encode": "~$ ^ s", "decode": "~($ ^ s)"},
             "1",
-            {"name": "j2", "width": 1},
+            {"name": "i2", "width": 1, "encode": "~$ ^ s", "decode": "~($ ^ s)"},
             {"name": "imm11", "width": 11}
         ],
-        "expr": [
-            {"name": "i1", "part": "j1", "encode": "~$ ^ s", "decode": "~($ ^ s)"},
-            {"name": "i2", "part": "j2", "encode": "~$ ^ s", "decode": "~($ ^ s)"}
-        ],
         "export": [
-            {"name": "simm25", "parts": ["s", "$i1", "$i2", "imm10", "imm11", "0"], "signed": true}
+            {"name": "simm25", "parts": ["s", "i1", "i2", "imm10", "imm11", "0"], "signed": true}
         ]
     },
     {

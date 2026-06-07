@@ -8,7 +8,7 @@
 class BExport {
     std::string m_name;
     unsigned m_width;
-    std::vector<const BPart*> m_part_refs;
+    std::vector<const BPart *> m_part_refs;
     bool m_signed;
     bool m_passthrough;
     unsigned m_shift;

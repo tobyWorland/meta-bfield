@@ -4,10 +4,12 @@
 #include <format>
 #include <stdexcept>
 
-BField::BField(const std::string &name, unsigned width,
-               std::vector<std::unique_ptr<BPart>> &&parts,
-               std::vector<BExport> &&exports)
-    : m_name{name}, m_width{width}, m_parts{std::move(parts)}, m_exports{std::move(exports)} {
+BField::BField(std::string name, unsigned width,
+               std::vector<std::unique_ptr<BPart>> parts,
+               std::vector<BExpr> exprs,
+               std::vector<BExport> exports)
+    : m_name{std::move(name)}, m_width{width}, m_parts{std::move(parts)},
+      m_exprs{std::move(exprs)}, m_exports{std::move(exports)} {
 
     if (m_exports.empty()) {
         // No exports - export all parts

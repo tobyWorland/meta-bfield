@@ -28,6 +28,10 @@ void BFieldBuilder::set_swapped() {
 void BFieldBuilder::push_back_part(const BPart &part) {
     m_parts.push_back(std::make_unique<BPart>(part));
 }
+void BFieldBuilder::push_back_expr(std::string name, std::string part_name,
+                                   std::string encode, std::string decode) {
+    m_exprs.emplace_back(std::move(name), std::move(part_name), std::move(encode), std::move(decode));
+}
 
 void BFieldBuilder::export_new() {
     m_new_export_name.reset();
@@ -148,7 +152,7 @@ BField BFieldBuilder::build() {
         m_parts.swap(swapped_parts);
     }
 
-    BField result{m_field_name.value(), m_field_width.value(), std::move(m_parts), std::move(m_exports)};
+    BField result{m_field_name.value(), m_field_width.value(), std::move(m_parts), std::move(m_exprs), std::move(m_exports)};
 
     reset();
 

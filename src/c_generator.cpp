@@ -145,8 +145,8 @@ void body_encode_from_field(std::fstream &source, const BField &field) {
             }
 
             // Check export does not exceed width and if it does then return 0 to signal error
-            source << indent() << std::format("if (!UNSIGNED_CHECK_FIT(parts->{} >> {}, {})) {{\n",
-                                              exp.name(), exp.shift(), shift);
+            source << indent() << std::format("if (!{}SIGNED_CHECK_FIT(parts->{} >> {}, {})) {{\n",
+                                              (exp.is_signed() ? "" : "UN"), exp.name(), exp.shift(), shift);
             source << indent(2) << "return 0;\n" << indent() << "}\n";
 
             // Create variable for parts that compose the export

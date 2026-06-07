@@ -31,6 +31,7 @@ static std::string expect_value_string(boost::json::value expected_string, const
 static boost::json::value json_from_stream(std::istream &stream) {
     boost::json::stream_parser stream_parser;
     boost::system::error_code err_code;
+    unsigned long line_count{1};
 
     stream_parser.reset();
 
@@ -42,8 +43,10 @@ static boost::json::value json_from_stream(std::istream &stream) {
         }
         stream_parser.write(line, err_code);
         if (err_code) {
-            throw SpecException(std::format("JSON Error: {}", err_code.message()));
+            throw SpecException(std::format("JSON Error on line {}: {}", line_count, err_code.message()));
         }
+
+        line_count++;
     }
 
     return stream_parser.release();

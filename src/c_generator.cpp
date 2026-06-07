@@ -44,9 +44,8 @@ void struct_from_field(std::fstream &file, const BField &field) {
             assert(part->width() <= 32);
             file << indent() << type_from_width(part->width()) << " " << part->name() << ";\n";
         } else {
-            // assert(!exp.is_signed()); // TODO: Temp disable
-            // TODO: handle if signed
-            file << indent() << type_from_width(32) << " " << exp.name() << ";\n";
+            const char *export_type = exp.is_signed() ? "int32_t" : "uint32_t";
+            file << indent() << export_type << " " << exp.name() << ";\n";
         }
     }
     file << "};\n\n";
@@ -120,7 +119,7 @@ void body_match_from_field(std::fstream &source, const BField &field) {
             source << std::format("(BIT_EXTRACT(field, {}, {}) == 0x{:X}U)",
                                   shift, part->width(), part->reserved_value());
 
-            }
+        }
         width_left -= part->width();
     }
     source << ";\n}\n";
@@ -216,12 +215,19 @@ void body_decode_from_field(std::fstream &source, const BField &field) {
                 source << indent() << std::format("{} |= {} << {};\n", exp.name(), part->name(), shift);
             }
 
+            source << indent() << std::format("result.{} = ", exp.name());
+
+            if (exp.is_signed()) {
+                source << std::format("SIGNED_EXTEND({}, {})", exp.name(), exp.width());
+            } else {
+                source << exp.name();
+            }
 
             if (exp.shift() > 0) {
-                source << indent() << std::format("result.{} = {} << {};\n", exp.name(), exp.name(), exp.shift());
-            } else {
-                source << indent() << std::format("result.{} = {};\n", exp.name(), exp.name());
+                source << "<< " << exp.shift();
             }
+
+            source << ";\n";
         }
     }
 

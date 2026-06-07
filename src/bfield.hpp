@@ -25,6 +25,7 @@ class BField {
     const std::vector<std::unique_ptr<BPart>> &parts() const;
     unsigned reserved_value() const; // TODO: Test
     bool any_variable_parts() const;
+    bool any_reserved_parts() const;
     const std::vector<BExport> exports() const;
     bool is_part_exported(const BPart *part) const;
 };

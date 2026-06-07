@@ -79,8 +79,10 @@ void generate_header(std::fstream &header, const std::vector<BField> &fields) {
     }
 
     for (const BField &field : fields) {
-        prototype_match_from_field(header, field);
-        header << ";\n";
+        if (field.any_reserved_parts()) {
+            prototype_match_from_field(header, field);
+            header << ";\n";
+        }
     }
 
     header << "\n";
@@ -229,7 +231,9 @@ void body_decode_from_field(std::fstream &source, const BField &field) {
 
 void generate_source(std::fstream &source, const std::vector<BField> &fields) {
     for (const BField &field : fields) {
-        body_match_from_field(source, field);
+        if (field.any_reserved_parts()) {
+            body_match_from_field(source, field);
+        }
     }
     source << "\n";
 

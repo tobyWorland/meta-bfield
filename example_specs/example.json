@@ -1,0 +1,15 @@
+
+[
+    {
+        "name": "two_int8s",
+        "width": 16,
+        "parts": [
+            {"name": "a", "width": 8},
+            {"name": "b", "width": 8}
+        ],
+        "export": [
+            {"name": "sa", "parts": ["a"], "signed": true},
+            {"name": "sb", "parts": ["b"], "signed": true}
+        ]
+	}
+]

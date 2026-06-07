@@ -28,6 +28,29 @@ add_executable(meta_bfield
 )
 target_link_libraries(meta_bfield bfield)
 
+function (meta_gen name outbase spec_file)
+add_custom_command(
+    OUTPUT "${CMAKE_BINARY_DIR}/${outbase}.c"
+    DEPENDS meta_bfield preludes
+    COMMAND "${CMAKE_BINARY_DIR}/meta_bfield"
+            "${CMAKE_SOURCE_DIR}/${spec_file}"
+            "${CMAKE_BINARY_DIR}/${outbase}"
+)
+add_library(gen_${name} STATIC
+	"${CMAKE_BINARY_DIR}/${outbase}.c"
+)
+target_include_directories(gen_${name} PUBLIC "${CMAKE_BINARY_DIR}")
+endfunction()
+
+meta_gen("t32_encoding" "t32_encoding" "example_specs/t32.json")
+meta_gen("example" "example" "example_specs/example.json")
+
+# TODO: Name demo
+add_executable(test_t32
+    test_t32.c
+)
+target_link_libraries(test_t32 gen_t32_encoding)
+
 add_executable(demo_prelude
     demo_prelude.c
 )
@@ -35,16 +58,3 @@ add_executable(demo_prelude
 enable_testing()
 add_subdirectory(third_party/googletest EXCLUDE_FROM_ALL)
 add_subdirectory(tests)
-
-add_custom_command(
-    OUTPUT "${CMAKE_BINARY_DIR}/t32_encoding.c"
-    DEPENDS meta_bfield
-    COMMAND "${CMAKE_BINARY_DIR}/meta_bfield"
-            "${CMAKE_SOURCE_DIR}/example_specs/t32.json"
-            "${CMAKE_BINARY_DIR}/t32_encoding"
-)
-
-add_executable(test_t32
-    test_t32.c
-    "${CMAKE_BINARY_DIR}/t32_encoding.c"
-)

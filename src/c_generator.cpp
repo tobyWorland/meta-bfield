@@ -115,8 +115,9 @@ void body_match_from_field(std::fstream &source, const BField &field) {
             }
             first = false;
             unsigned shift = width_left - part->width();
-            source << std::format("(((field >> {}) & ((1ULL << {}) - 1)) == {})",
+            source << std::format("(BIT_EXTRACT(field, {}, {}) == 0x{:X}U)",
                                   shift, part->width(), part->reserved_value());
+
             }
         width_left -= part->width();
     }
@@ -137,13 +138,13 @@ void body_encode_from_field(std::fstream &source, const BField &field) {
 
             // If there is a shift check the shifted part is zerod
             if (exp.shift() > 0) {
-                source << indent() << std::format("if (parts->{} & ((1 << {})-1)) {{\n",
+                source << indent() << std::format("if (BIT_EXTRACT(parts->{}, 0, {})) {{\n",
                                                   exp.name(), exp.shift());
                 source << indent(2) << "return 0;\n" << indent() << "}\n";
             }
 
             // Check export does not exceed width and if it does then return 0 to signal error
-            source << indent() << std::format("if ((parts->{} >> {}) & ~((1ULL << {}) - 1)) {{\n",
+            source << indent() << std::format("if (!UNSIGNED_CHECK_FIT(parts->{} >> {}, {})) {{\n",
                                               exp.name(), exp.shift(), shift);
             source << indent(2) << "return 0;\n" << indent() << "}\n";
 
@@ -152,7 +153,7 @@ void body_encode_from_field(std::fstream &source, const BField &field) {
                 exported_parts.insert(part->name());
                 shift -= part->width();
                 source << indent() << "uint32_t " << part->name() << " = ";
-                source << std::format("((parts->{} >> {}) & ((1 << {}) - 1));\n",
+                source << std::format("BIT_EXTRACT(parts->{}, {}, {});\n",
                                       exp.name(), shift, part->width());
             }
         }
@@ -163,7 +164,7 @@ void body_encode_from_field(std::fstream &source, const BField &field) {
             bool is_export_part = exported_parts.contains(part->name());
             if (!is_export_part) {
                 // Check part does not exceed width and if it does then return 0 to signal error
-                source << indent() << std::format("if (parts->{} & ~((1ULL << {}) - 1)) {{\n",
+                source << indent() << std::format("if (!UNSIGNED_CHECK_FIT(parts->{}, {})) {{\n",
                                                   part->name(), part->width());
                 source << indent(2) << "return 0;\n" << indent() << "}\n";
             }
@@ -192,11 +193,11 @@ void body_decode_from_field(std::fstream &source, const BField &field) {
             unsigned shift = width_left - part->width();
             if (field.is_part_exported(part.get())) {
                 source << indent()
-                       << std::format("result.{} = ((field >> {}) & ((1ULL << " "{}) - 1));\n",
+                       << std::format("result.{} = BIT_EXTRACT(field, {}, {});\n",
                                       part->name(), shift, part->width());
             } else {
                 source << indent()
-                       << std::format("uint32_t {} = ((field >> {}) & ((1ULL << " "{}) - 1));\n",
+                       << std::format("uint32_t {} = BIT_EXTRACT(field, {}, {});\n",
                                       part->name(), shift, part->width());
             }
         }

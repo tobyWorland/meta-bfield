@@ -45,11 +45,10 @@ endfunction()
 meta_gen("t32_encoding" "t32_encoding" "example_specs/t32.json")
 meta_gen("example" "example" "example_specs/example.json")
 
-# TODO: Name demo
-add_executable(test_t32
-    test_t32.c
+add_executable(demo_t32
+    demo_t32.c
 )
-target_link_libraries(test_t32 gen_t32_encoding)
+target_link_libraries(demo_t32 gen_t32_encoding)
 
 add_executable(demo_prelude
     demo_prelude.c

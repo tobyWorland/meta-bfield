@@ -4,6 +4,7 @@
 #include "build/t32_encoding.h"
 
 int main() {
+#if 1
     uint16_t bx_lr = 0x4770;
 	struct bx_t1_parts bx_t1_parts;
 
@@ -38,17 +39,21 @@ int main() {
 
 	movw_i_t3_parts = decode_movw_i_t3(*(uint32_t*)movwt3);
 	printf("Rd: %u imm16: %u\n", movw_i_t3_parts.Rd, movw_i_t3_parts.imm16);
+#endif
 
+#if 0
 	struct b_cond_t3_noit_parts bt3 = {};
 	bt3.cond = 0;
-	bt3.simm21 = 2;
+	bt3.simm21 = -2;
+	printf("Using: cond %u simm21 %d\n", bt3.cond, bt3.simm21);
 
 	uint16_t bt3out[2];
-	printf("B.W t3 %u\n", encode_b_cond_t3_noit((uint32_t*)bt3out, &bt3));
+	printf("B.W t3 Success? %u\n", encode_b_cond_t3_noit((uint32_t*)bt3out, &bt3));
 	printf("bt3 %04X %04X\n", bt3out[0], bt3out[1]);
 	bt3 = (struct b_cond_t3_noit_parts){};
 	bt3 = decode_b_cond_t3_noit(*(uint32_t*)bt3out);
-	printf("Cond %u simm21 %d\n", bt3.cond, bt3.simm21);
+	printf("Got: cond %u simm21 %d\n", bt3.cond, bt3.simm21);
+#endif
 
     return 0;
 }

@@ -60,8 +60,8 @@
             {"name": "imm11", "width": 11}
         ],
         "expr": [
-            {"name": "i1", "part": "j1", "encode": "~$ ^ s", "decode": "~($ ^ s"},
-            {"name": "i2", "part": "j2", "encode": "~$ ^ s", "decode": "~($ ^ s"}
+            {"name": "i1", "part": "j1", "encode": "~$ ^ s", "decode": "~($ ^ s)"},
+            {"name": "i2", "part": "j2", "encode": "~$ ^ s", "decode": "~($ ^ s)"}
         ],
         "export": [
             {"name": "simm25", "parts": ["s", "$i1", "$i2", "imm10", "imm11", "0"], "signed": true}

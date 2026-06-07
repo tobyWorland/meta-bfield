@@ -45,14 +45,7 @@ endfunction()
 meta_gen("t32_encoding" "t32_encoding" "example_specs/t32.json")
 meta_gen("example" "example" "example_specs/example.json")
 
-add_executable(demo_t32
-    demo_t32.c
-)
-target_link_libraries(demo_t32 gen_t32_encoding)
-
-add_executable(demo_prelude
-    demo_prelude.c
-)
+add_subdirectory(demos)
 
 enable_testing()
 add_subdirectory(third_party/googletest EXCLUDE_FROM_ALL)

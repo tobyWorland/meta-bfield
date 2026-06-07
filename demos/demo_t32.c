@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
-#include "build/t32_encoding.h"
+#include "t32_encoding.h"
 
 int main() {
 #if 1

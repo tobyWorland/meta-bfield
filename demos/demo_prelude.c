@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdint.h>
 
-#include "preludes/prelude.c"
+#include "../preludes/prelude.c"
 
 void shrink(int32_t x, bool sign, unsigned width) {
     printf("X = (%+d) %032b ", x, x);

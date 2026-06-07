@@ -40,10 +40,9 @@ void struct_from_field(std::fstream &file, const BField &field) {
                 continue;
 
             assert(part->width() <= 32);
-            // TODO: handle if signed
             file << indent() << type_from_width(part->width()) << " " << part->name() << ";\n";
         } else {
-            assert(!exp.is_signed());
+            // assert(!exp.is_signed()); // TODO: Temp disable
             // TODO: handle if signed
             file << indent() << type_from_width(32) << " " << exp.name() << ";\n";
         }
@@ -132,11 +131,18 @@ void body_encode_from_field(std::fstream &source, const BField &field) {
            << std::hex << field.reserved_value() << std::dec << ";\n";
     for (const BExport &exp : field.exports()) {
         if (!exp.is_passthrough()) {
-            unsigned shift = exp.width();
+            unsigned shift = exp.width() + exp.shift();
+
+            // If there is a shift check the shifted part is zerod
+            if (exp.shift() > 0) {
+                source << indent() << std::format("if (parts->{} & ((1 << {})-1)) {{\n",
+                                                  exp.name(), exp.shift());
+                source << indent(2) << "return 0;\n" << indent() << "}\n";
+            }
 
             // Check export does not exceed width and if it does then return 0 to signal error
-            source << indent() << std::format("if (parts->{} & ~((1ULL << {}) - 1)) {{\n",
-                                              exp.name(), shift);
+            source << indent() << std::format("if ((parts->{} >> {}) & ~((1ULL << {}) - 1)) {{\n",
+                                              exp.name(), exp.shift(), shift);
             source << indent(2) << "return 0;\n" << indent() << "}\n";
 
             // Create variable for parts that compose the export
@@ -205,7 +211,12 @@ void body_decode_from_field(std::fstream &source, const BField &field) {
                 source << indent() << std::format("{} |= {} << {};\n", exp.name(), part->name(), shift);
             }
 
-            source << indent() << std::format("result.{} = {};\n", exp.name(), exp.name());
+
+            if (exp.shift() > 0) {
+                source << indent() << std::format("result.{} = {} << {};\n", exp.name(), exp.name(), exp.shift());
+            } else {
+                source << indent() << std::format("result.{} = {};\n", exp.name(), exp.name());
+            }
         }
     }
 

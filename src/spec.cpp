@@ -167,6 +167,9 @@ void SpecReader::extract_field(boost::json::value element) {
                 // std::cout << "Got export: " << value << '\n';
                 extract_exports(value);
             }},
+            {"expr", [this](boost::json::value value) {
+                std::cout << "FIXME: Ignoring expr\n";
+            }}
         };
 
         auto it = map.find(pair.key());

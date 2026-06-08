@@ -1,7 +1,6 @@
 #pragma once
 
 #include "bexport.hpp"
-#include "bexpr.hpp"
 #include "bpart.hpp"
 
 #include <memory>
@@ -13,14 +12,12 @@ class BField {
     std::string m_name;
     unsigned m_width;
     std::vector<std::unique_ptr<BPart>> m_parts;
-    std::vector<BExpr> m_exprs;
     std::vector<BExport> m_exports;
     std::unordered_set<const BPart *> m_exported_parts;
 
   public:
     BField(std::string name, unsigned width,
            std::vector<std::unique_ptr<BPart>> parts,
-           std::vector<BExpr> exprs,
            std::vector<BExport> exports);
 
     const std::string &name() const;

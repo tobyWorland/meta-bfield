@@ -13,7 +13,6 @@ add_subdirectory(preludes)
 
 add_library(bfield OBJECT
     src/bexport.cpp
-    src/bexpr.cpp
     src/bfield.cpp
     src/bfield_builder.cpp
     src/bpart.cpp

@@ -33,6 +33,7 @@ void BFieldBuilder::export_new() {
     m_new_export_name.reset();
     m_new_export_part_refs.clear();
     m_new_export_is_signed.reset();
+    m_new_export_optional_shift.reset();
 }
 void BFieldBuilder::export_set_name(std::string name) {
     if (m_new_export_name) {
@@ -42,10 +43,21 @@ void BFieldBuilder::export_set_name(std::string name) {
     m_new_export_name = std::move(name);
 }
 void BFieldBuilder::export_push_part(std::string part_name) {
+    if (m_new_export_optional_shift) {
+        throw BFieldBuilderError("Export cannot accept any more parts after a part of all 0s has been used");
+    }
+
     auto it = std::find_if(m_parts.cbegin(), m_parts.cend(),
                            [&part_name](const auto &part) { return part->name() == part_name; });
 
     if (it == m_parts.cend()) {
+        // Handle all zero part
+        if (std::all_of(part_name.cbegin(), part_name.cend(), [](char c) { return c == '0'; })) {
+            auto zero_count = part_name.size();
+            m_new_export_optional_shift = zero_count;
+            return;
+        }
+
         throw BFieldBuilderError(std::format("Cannot export part '{}' as it doesn't exist.", part_name));
     }
 
@@ -69,7 +81,9 @@ void BFieldBuilder::export_commit() {
         throw BFieldBuilderError("Attempt to export without is signed set");
     }
 
-    auto e = BExport(*m_new_export_name, m_new_export_part_refs, *m_new_export_is_signed);
+    unsigned shift = m_new_export_optional_shift.value_or(0);
+
+    auto e = BExport(*m_new_export_name, m_new_export_part_refs, *m_new_export_is_signed, shift);
     m_exports.push_back(std::move(e));
 }
 

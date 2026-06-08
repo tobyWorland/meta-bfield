@@ -1,0 +1,39 @@
+
+[
+    {
+        "name": "two_int8s",
+        "width": 16,
+        "parts": [
+            {"name": "a", "width": 8},
+            {"name": "b", "width": 8}
+        ],
+        "export": [
+            {"name": "sa", "parts": ["a"], "signed": true},
+            {"name": "sb", "parts": ["b"], "signed": true}
+        ]
+    },
+    {
+        "name": "onetwothree",
+        "width": 12,
+        "parts": [
+            {"name": "one", "width": 4, "encode": "$ + 1", "decode": "$ - 1"},
+            {"name": "two", "width": 4, "encode": "$ + 2", "decode": "$ - 2"},
+            {"name": "three_part", "width": 4, "encode": "$ + 3", "decode": "$ - 3"}
+        ],
+        "export": [
+            "one",
+            "two",
+            {"name": "three", "parts": ["three_part"], "signed": false}
+        ]
+    },
+    {
+        "name": "timestwoaddone",
+        "width": 8,
+        "parts": [
+            {"name": "x", "width": 8, "encode": "$ + 1", "decode": "$ - 1"}
+        ],
+        "export": [
+            {"name": "value", "parts": ["x", "0"], "signed": false}
+        ]
+    }
+]

@@ -1,0 +1,5 @@
+#include "preludes.hpp"
+
+const char *c_prelude = R"(
+@PRELUDE_CONTENT_FOR_C@
+)";

@@ -4,11 +4,11 @@
 #include <format>
 #include <stdexcept>
 
-BField::BField(const std::string &name, unsigned width,
-               std::vector<std::unique_ptr<BPart>> &&parts,
-               std::vector<BExport> &&exports)
-    : m_name{name}, m_width{width}, m_parts{std::move(parts)}, m_exports{std::move(exports)} {
-
+BField::BField(std::string name, unsigned width,
+               std::vector<std::unique_ptr<BPart>> parts,
+               std::vector<BExport> exports)
+    : m_name{std::move(name)}, m_width{width}, m_parts{std::move(parts)},
+      m_exports{std::move(exports)} {
     if (m_exports.empty()) {
         // No exports - export all parts
         for (const auto &part : m_parts) {
@@ -57,9 +57,15 @@ unsigned BField::reserved_value() const {
 
 bool BField::any_variable_parts() const {
     // TODO: Could be !m_exports.empty()?
-    return std::any_of(m_parts.cbegin(), m_parts.cend(),
-                       [](auto &part) { return !part->is_reserved(); }
-        );
+    return std::any_of(m_parts.cbegin(), m_parts.cend(), [](auto &part) {
+        return !part->is_reserved();
+    });
+}
+
+bool BField::any_reserved_parts() const {
+    return std::any_of(m_parts.cbegin(), m_parts.cend(), [](auto &part) {
+        return part->is_reserved();
+    });
 }
 
 const std::vector<BExport> BField::exports() const {

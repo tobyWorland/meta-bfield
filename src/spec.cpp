@@ -31,6 +31,7 @@ static std::string expect_value_string(boost::json::value expected_string, const
 static boost::json::value json_from_stream(std::istream &stream) {
     boost::json::stream_parser stream_parser;
     boost::system::error_code err_code;
+    unsigned long line_count{1};
 
     stream_parser.reset();
 
@@ -42,8 +43,10 @@ static boost::json::value json_from_stream(std::istream &stream) {
         }
         stream_parser.write(line, err_code);
         if (err_code) {
-            throw SpecException(std::format("JSON Error: {}", err_code.message()));
+            throw SpecException(std::format("JSON Error on line {}: {}", line_count, err_code.message()));
         }
+
+        line_count++;
     }
 
     return stream_parser.release();
@@ -64,13 +67,30 @@ void SpecReader::extract_parts(boost::json::value element_parts) {
             if (!object.contains("width")) {
                 throw SpecException("Part object is missing a width field");
             }
+
+            // encode_expr and decode_expr are optional
+            std::string encode_expr;
+            std::string decode_expr;
+            if (object.contains("encode")) {
+                encode_expr = expect_value_string(
+                    object.at("encode"),
+                    "Expect part encode to be a string");
+            }
+            if (object.contains("decode")) {
+                decode_expr = expect_value_string(
+                    object.at("decode"),
+                    "Expect part decode to be a string");
+            }
+
             auto part_name = expect_value_string(
                 object.at("name"), "Expect part name to be a string");
 
             auto part_width =
                 expect_value_type(object.at("width").try_as_int64(),
                                   "Expect part width to be an int64");
-            m_field_builder.push_back_part(BPart(std::string(part_name.data()), part_width));
+            m_field_builder.push_back_part(
+                BPart(std::string(part_name.data()), part_width, encode_expr, decode_expr)
+                );
             break;
         }
         case boost::json::kind::string:

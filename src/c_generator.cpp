@@ -1,11 +1,14 @@
 #include "c_generator.hpp"
 
+#include "preludes.hpp"
+
 #include <cassert>
 #include <filesystem>
 #include <format>
 #include <fstream>
 #include <iostream>
 #include <unordered_set>
+#include <unordered_map>
 
 // 4 spaces = one indent
 constexpr std::string indent(unsigned n=1) {
@@ -40,12 +43,10 @@ void struct_from_field(std::fstream &file, const BField &field) {
                 continue;
 
             assert(part->width() <= 32);
-            // TODO: handle if signed
             file << indent() << type_from_width(part->width()) << " " << part->name() << ";\n";
         } else {
-            assert(!exp.is_signed());
-            // TODO: handle if signed
-            file << indent() << type_from_width(32) << " " << exp.name() << ";\n";
+            const char *export_type = exp.is_signed() ? "int32_t" : "uint32_t";
+            file << indent() << export_type << " " << exp.name() << ";\n";
         }
     }
     file << "};\n\n";
@@ -78,8 +79,10 @@ void generate_header(std::fstream &header, const std::vector<BField> &fields) {
     }
 
     for (const BField &field : fields) {
-        prototype_match_from_field(header, field);
-        header << ";\n";
+        if (field.any_reserved_parts()) {
+            prototype_match_from_field(header, field);
+            header << ";\n";
+        }
     }
 
     header << "\n";
@@ -114,9 +117,10 @@ void body_match_from_field(std::fstream &source, const BField &field) {
             }
             first = false;
             unsigned shift = width_left - part->width();
-            source << std::format("(((field >> {}) & ((1ULL << {}) - 1)) == {})",
+            source << std::format("(BIT_EXTRACT(field, {}, {}) == 0x{:X}U)",
                                   shift, part->width(), part->reserved_value());
-            }
+
+        }
         width_left -= part->width();
     }
     source << ";\n}\n";
@@ -132,11 +136,18 @@ void body_encode_from_field(std::fstream &source, const BField &field) {
            << std::hex << field.reserved_value() << std::dec << ";\n";
     for (const BExport &exp : field.exports()) {
         if (!exp.is_passthrough()) {
-            unsigned shift = exp.width();
+            unsigned shift = exp.width() + exp.shift();
+
+            // If there is a shift check the shifted part is zerod
+            if (exp.shift() > 0) {
+                source << indent() << std::format("if (BIT_EXTRACT(parts->{}, 0, {})) {{\n",
+                                                  exp.name(), exp.shift());
+                source << indent(2) << "return 0;\n" << indent() << "}\n";
+            }
 
             // Check export does not exceed width and if it does then return 0 to signal error
-            source << indent() << std::format("if (parts->{} & ~((1ULL << {}) - 1)) {{\n",
-                                              exp.name(), shift);
+            source << indent() << std::format("if (!{}SIGNED_CHECK_FIT(parts->{} >> {}, {})) {{\n",
+                                              (exp.is_signed() ? "" : "UN"), exp.name(), exp.shift(), shift);
             source << indent(2) << "return 0;\n" << indent() << "}\n";
 
             // Create variable for parts that compose the export
@@ -144,7 +155,7 @@ void body_encode_from_field(std::fstream &source, const BField &field) {
                 exported_parts.insert(part->name());
                 shift -= part->width();
                 source << indent() << "uint32_t " << part->name() << " = ";
-                source << std::format("((parts->{} >> {}) & ((1 << {}) - 1));\n",
+                source << std::format("BIT_EXTRACT(parts->{}, {}, {});\n",
                                       exp.name(), shift, part->width());
             }
         }
@@ -153,16 +164,22 @@ void body_encode_from_field(std::fstream &source, const BField &field) {
         if (!part->is_reserved()) {
             unsigned shift = width_left - part->width();
             bool is_export_part = exported_parts.contains(part->name());
+
             if (!is_export_part) {
                 // Check part does not exceed width and if it does then return 0 to signal error
-                source << indent() << std::format("if (parts->{} & ~((1ULL << {}) - 1)) {{\n",
+                source << indent() << std::format("if (!UNSIGNED_CHECK_FIT(parts->{}, {})) {{\n",
                                                   part->name(), part->width());
                 source << indent(2) << "return 0;\n" << indent() << "}\n";
             }
 
             // Encode part
-            source << indent() << std::format("encoded |= ({}{} << {});\n",
-                                              is_export_part ? "" : "parts->", part->name(), shift);
+            std::string part_encode_expr{ (is_export_part ? "" : "parts->") + part->name()};
+            if (part->has_exprs()) {
+                part_encode_expr = part->encode_expr(part_encode_expr);
+                part_encode_expr = std::format("({}) & BIT_MASK({})", part_encode_expr, part->width());
+            }
+            source << indent() << std::format("encoded |= (({}) << {});\n",
+                                              part_encode_expr, shift);
         }
 
         width_left -= part->width();
@@ -179,20 +196,50 @@ void body_decode_from_field(std::fstream &source, const BField &field) {
     source << " {\n";
     source << indent() << struct_name_from_field(field) << " result = {};\n";
 
+    // Defer parts with exprs as they can refer to other parts not yet defined in the C code
+    std::unordered_map<const BPart *, unsigned> deferred_parts;
     for (const auto &part : field.parts()) {
+        width_left -= part->width();
         if (!part->is_reserved()) {
-            unsigned shift = width_left - part->width();
+            unsigned shift = width_left;
+
+            std::string part_decode_expr = std::format("BIT_EXTRACT(field, {}, {})", shift, part->width());
+            if (part->has_exprs()) {
+                deferred_parts.insert({part.get(), shift});
+                part_decode_expr = std::format("({}) & BIT_MASK({})", part_decode_expr, part->width());
+                continue;
+            }
+
             if (field.is_part_exported(part.get())) {
                 source << indent()
-                       << std::format("result.{} = ((field >> {}) & ((1ULL << " "{}) - 1));\n",
-                                      part->name(), shift, part->width());
+                       << std::format("result.{} = {};\n",
+                                      part->name(), part_decode_expr);
             } else {
                 source << indent()
-                       << std::format("uint32_t {} = ((field >> {}) & ((1ULL << " "{}) - 1));\n",
-                                      part->name(), shift, part->width());
+                       << std::format("uint32_t {} = {};\n",
+                                      part->name(), part_decode_expr);
             }
         }
-        width_left -= part->width();
+    }
+
+    // Handle deferred parts
+    for (const auto &pair : deferred_parts) {
+        const BPart *part = pair.first;
+        unsigned shift = pair.second;
+
+        std::string part_decode_expr = std::format("BIT_EXTRACT(field, {}, {})", shift, part->width());
+        part_decode_expr = part->decode_expr(part_decode_expr);
+        part_decode_expr = std::format("({}) & BIT_MASK({})", part_decode_expr, part->width());
+
+        if (field.is_part_exported(part)) {
+            source << indent()
+                   << std::format("result.{} = {};\n",
+                                  part->name(), part_decode_expr);
+        } else {
+            source << indent()
+                   << std::format("uint32_t {} = {};\n",
+                                  part->name(), part_decode_expr);
+        }
     }
 
     for (const BExport &exp : field.exports()) {
@@ -205,7 +252,19 @@ void body_decode_from_field(std::fstream &source, const BField &field) {
                 source << indent() << std::format("{} |= {} << {};\n", exp.name(), part->name(), shift);
             }
 
-            source << indent() << std::format("result.{} = {};\n", exp.name(), exp.name());
+            source << indent() << std::format("result.{} = ", exp.name());
+
+            if (exp.is_signed()) {
+                source << std::format("SIGNED_EXTEND({}, {})", exp.name(), exp.width());
+            } else {
+                source << exp.name();
+            }
+
+            if (exp.shift() > 0) {
+                source << "<< " << exp.shift();
+            }
+
+            source << ";\n";
         }
     }
 
@@ -215,7 +274,9 @@ void body_decode_from_field(std::fstream &source, const BField &field) {
 
 void generate_source(std::fstream &source, const std::vector<BField> &fields) {
     for (const BField &field : fields) {
-        body_match_from_field(source, field);
+        if (field.any_reserved_parts()) {
+            body_match_from_field(source, field);
+        }
     }
     source << "\n";
 
@@ -256,8 +317,13 @@ bool generate_fields(const std::string output_basepath, const std::vector<BField
         return false;
     }
 
+    header << "// AUTOGEN - DO NOT EDIT\n\n";
+    source << "// AUTOGEN - DO NOT EDIT\n\n";
+
     header << "#pragma once\n\n" << "#include <stdbool.h>\n#include <stdint.h>\n\n";
-    source << "#include \"" << header_file << "\"\n\n";
+    source << "#include \"" << header_file << "\"\n";
+
+    source << c_prelude;
 
     generate_header(header, fields);
     generate_source(source, fields);

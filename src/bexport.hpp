@@ -15,7 +15,7 @@ class BExport {
 
 public:
     BExport(const BPart *passthrough_part);
-    BExport(const std::string &name, const std::vector<const BPart*> &part_refs, bool is_signed, unsigned shift);
+    BExport(std::string name, std::vector<const BPart*> part_refs, bool is_signed, unsigned shift);
 
     const std::string &name() const;
     unsigned width() const;

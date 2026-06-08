@@ -31,7 +31,7 @@ target_link_libraries(meta_bfield bfield)
 function (meta_gen name outbase spec_file)
 add_custom_command(
     OUTPUT "${CMAKE_BINARY_DIR}/${outbase}.c"
-    DEPENDS meta_bfield preludes
+    DEPENDS meta_bfield preludes "${CMAKE_SOURCE_DIR}/${spec_file}"
     COMMAND "${CMAKE_BINARY_DIR}/meta_bfield"
             "${CMAKE_SOURCE_DIR}/${spec_file}"
             "${CMAKE_BINARY_DIR}/${outbase}"

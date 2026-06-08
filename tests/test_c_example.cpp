@@ -38,3 +38,16 @@ TEST(example_sec, onetwothree) {
     EXPECT_EQ(ott_parts.two, 0b1110);
     EXPECT_EQ(ott_parts.three, 0b1101);
 }
+
+TEST(example_sec, timestwoaddone) {
+    timestwoaddone_parts ttao_parts;
+    uint8_t value;
+
+    ttao_parts.value = 8;
+    EXPECT_EQ(encode_timestwoaddone(&value, &ttao_parts), 8);
+    EXPECT_EQ(value, 5);
+
+    ttao_parts = {};
+    ttao_parts = decode_timestwoaddone(value);
+    EXPECT_EQ(ttao_parts.value, 8);
+}

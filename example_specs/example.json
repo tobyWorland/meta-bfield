@@ -25,5 +25,15 @@
             "two",
             {"name": "three", "parts": ["three_part"], "signed": false}
         ]
+    },
+    {
+        "name": "timestwoaddone",
+        "width": 8,
+        "parts": [
+            {"name": "x", "width": 8, "encode": "$ + 1", "decode": "$ - 1"}
+        ],
+        "export": [
+            {"name": "value", "parts": ["x", "0"], "signed": false}
+        ]
     }
 ]

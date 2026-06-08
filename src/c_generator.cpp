@@ -198,8 +198,8 @@ void body_decode_from_field(std::fstream &source, const BField &field) {
     // Defer parts with exprs as they can refer to other parts not yet defined in the C code
     std::unordered_map<const BPart *, unsigned> deferred_parts;
     for (const auto &part : field.parts()) {
+        width_left -= part->width();
         if (!part->is_reserved()) {
-            width_left -= part->width();
             unsigned shift = width_left;
 
             std::string part_decode_expr = std::format("BIT_EXTRACT(field, {}, {})", shift, part->width());

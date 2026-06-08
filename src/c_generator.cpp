@@ -177,7 +177,7 @@ void body_encode_from_field(std::fstream &source, const BField &field) {
             if (part->has_exprs()) {
                 part_encode_expr = part->encode_expr(part_encode_expr);
             }
-            source << indent() << std::format("encoded |= ({} << {});\n",
+            source << indent() << std::format("encoded |= (({}) << {});\n",
                                               part_encode_expr, shift);
         }
 

@@ -30,6 +30,63 @@ enum thumb_condition {
 // would have a immediate of -4 to branch to the current
 // instruction. (regardless of if it's narrow or wide)
 
+TEST(t32_encoding_spec, b_t1) {
+    constexpr uint16_t bt1_eq_pcoff4     = 0xD002;
+    constexpr uint16_t bt1_ne_pcoff_neg4 = 0xD1FE;
+
+    uint16_t out;
+    b_cond_t1_noit_parts parts_for_enc{};
+    b_cond_t1_noit_parts parts_for_dec{};
+
+    EXPECT_TRUE(match_b_cond_t1_noit(bt1_eq_pcoff4));
+    EXPECT_TRUE(match_b_cond_t1_noit(bt1_ne_pcoff_neg4));
+
+    parts_for_enc.cond = TC_EQ;
+    parts_for_enc.simm8 = 4;
+
+    EXPECT_EQ(encode_b_cond_t1_noit(&out, &parts_for_enc), 16);
+    EXPECT_EQ(out, bt1_eq_pcoff4);
+
+    parts_for_dec = decode_b_cond_t1_noit(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+
+    parts_for_enc.cond = TC_NE;
+    parts_for_enc.simm8 = -4;
+
+    EXPECT_EQ(encode_b_cond_t1_noit(&out, &parts_for_enc), 16);
+    EXPECT_EQ(out, bt1_ne_pcoff_neg4);
+
+    parts_for_dec = decode_b_cond_t1_noit(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+}
+
+TEST(t32_encoding_spec, b_t2) {
+    constexpr uint16_t bt2_pcoff4     = 0xE002;
+    constexpr uint16_t bt2_pcoff_neg4 = 0xE7FE;
+
+    uint16_t out;
+    b_t2_parts parts_for_enc{};
+    b_t2_parts parts_for_dec{};
+
+    EXPECT_TRUE(match_b_t2(bt2_pcoff4));
+    EXPECT_TRUE(match_b_t2(bt2_pcoff_neg4));
+
+    parts_for_enc.simm11 = 4;
+
+    EXPECT_EQ(encode_b_t2(&out, &parts_for_enc), 16);
+    EXPECT_EQ(out, bt2_pcoff4);
+
+    parts_for_dec = decode_b_t2(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+
+    parts_for_enc.simm11 = -4;
+
+    EXPECT_EQ(encode_b_t2(&out, &parts_for_enc), 16);
+    EXPECT_EQ(out, bt2_pcoff_neg4);
+
+    parts_for_dec = decode_b_t2(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+}
 
 TEST(t32_encoding_spec, b_t3) {
     constexpr uint32_t bt3_eq_pcoff4     = 0x8002'F000;
@@ -60,8 +117,6 @@ TEST(t32_encoding_spec, b_t3) {
     parts_for_dec = decode_b_cond_t3_noit(out);
     EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
 }
-
-// TODO: t1 and t2
 
 TEST(t32_encoding_spec, b_t4) {
     constexpr uint32_t bt4_pcoff4     = 0xB802'F000;

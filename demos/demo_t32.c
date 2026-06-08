@@ -40,22 +40,16 @@ int main() {
 #endif
 
 #if 1
-    struct b_t4_parts bt4 = {};
-    bt4.simm25 = -4;
-    printf("Using: simm25 %d\n", bt4.simm25);
+    struct b_cond_t1_noit_parts bt1 = {};
+    bt1.cond = 1;
+    bt1.simm8 = -4;
+    printf("Using: simm11 %d\n", bt1.simm8);
 
-    // uint16_t bt4out[2];
-    uint32_t _bt4;
-    uint16_t* bt4out = (void*)&_bt4;
-    printf("B.W t4 Success? %u\n", encode_b_t4((uint32_t*)bt4out, &bt4));
-    printf("bt4 %04X %04X\n", bt4out[0], bt4out[1]);
+    uint16_t bt1out;
+    printf("B t1 Success? %u\n", encode_b_cond_t1_noit(&bt1out, &bt1));
+    printf("bt1 %04X\n", bt1out);
 
-    bt4 = (struct b_t4_parts){};
-    bt4 = decode_b_t4(*(uint32_t*)bt4out);
-    printf("Got: simm25 %d\n", bt4.simm25);
-
-    // out(bt4out, sizeof(bt4out));
-    out(&_bt4, sizeof(_bt4));
+    out(&bt1out, sizeof(bt1out));
 #endif
 
     return 0;

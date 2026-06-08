@@ -205,6 +205,7 @@ void body_decode_from_field(std::fstream &source, const BField &field) {
             std::string part_decode_expr = std::format("BIT_EXTRACT(field, {}, {})", shift, part->width());
             if (part->has_exprs()) {
                 deferred_parts.insert({part.get(), shift});
+                part_decode_expr = std::format("({}) & BIT_MASK({})", part_decode_expr, part->width());
                 continue;
             }
 
@@ -227,6 +228,7 @@ void body_decode_from_field(std::fstream &source, const BField &field) {
 
         std::string part_decode_expr = std::format("BIT_EXTRACT(field, {}, {})", shift, part->width());
         part_decode_expr = part->decode_expr(part_decode_expr);
+        part_decode_expr = std::format("({}) & BIT_MASK({})", part_decode_expr, part->width());
 
         if (field.is_part_exported(part)) {
             source << indent()

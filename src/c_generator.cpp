@@ -176,6 +176,7 @@ void body_encode_from_field(std::fstream &source, const BField &field) {
             std::string part_encode_expr{ (is_export_part ? "" : "parts->") + part->name()};
             if (part->has_exprs()) {
                 part_encode_expr = part->encode_expr(part_encode_expr);
+                part_encode_expr = std::format("({}) & BIT_MASK({})", part_encode_expr, part->width());
             }
             source << indent() << std::format("encoded |= (({}) << {});\n",
                                               part_encode_expr, shift);

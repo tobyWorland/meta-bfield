@@ -40,20 +40,22 @@ int main() {
 #endif
 
 #if 1
-    struct b_cond_t3_noit_parts bt3 = {};
-    bt3.cond = 0;
-    bt3.simm21 = -2;
-    printf("Using: cond %u simm21 %d\n", bt3.cond, bt3.simm21);
+    struct b_t4_parts bt4 = {};
+    bt4.simm25 = -4;
+    printf("Using: simm25 %d\n", bt4.simm25);
 
-    uint16_t bt3out[2];
-    printf("B.W t3 Success? %u\n", encode_b_cond_t3_noit((uint32_t*)bt3out, &bt3));
-    printf("bt3 %04X %04X\n", bt3out[0], bt3out[1]);
+    // uint16_t bt4out[2];
+    uint32_t _bt4;
+    uint16_t* bt4out = (void*)&_bt4;
+    printf("B.W t4 Success? %u\n", encode_b_t4((uint32_t*)bt4out, &bt4));
+    printf("bt4 %04X %04X\n", bt4out[0], bt4out[1]);
 
-    bt3 = (struct b_cond_t3_noit_parts){};
-    bt3 = decode_b_cond_t3_noit(*(uint32_t*)bt3out);
-    printf("Got: cond %u simm21 %d\n", bt3.cond, bt3.simm21);
+    bt4 = (struct b_t4_parts){};
+    bt4 = decode_b_t4(*(uint32_t*)bt4out);
+    printf("Got: simm25 %d\n", bt4.simm25);
 
-    out(bt3out, sizeof(bt3out));
+    // out(bt4out, sizeof(bt4out));
+    out(&_bt4, sizeof(_bt4));
 #endif
 
     return 0;

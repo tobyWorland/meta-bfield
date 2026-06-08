@@ -9,6 +9,11 @@ target_include_directories(test_c_prelude PRIVATE "${CMAKE_SOURCE_DIR}/preludes"
 add_executable(test_c_example test_c_example.cpp "${CMAKE_BINARY_DIR}/example.c")
 target_link_libraries(test_c_example GTest::gtest_main gen_example)
 
+add_executable(test_c_t32_encoding test_c_t32_encoding.cpp "${CMAKE_BINARY_DIR}/t32_encoding.c")
+target_link_libraries(test_c_t32_encoding GTest::gtest_main gen_t32_encoding)
+
 include(GoogleTest)
 gtest_discover_tests(test_bfield)
 gtest_discover_tests(test_c_prelude)
+gtest_discover_tests(test_c_example)
+gtest_discover_tests(test_c_t32_encoding)

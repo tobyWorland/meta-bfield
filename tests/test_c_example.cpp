@@ -20,7 +20,7 @@ TEST(example_spec, two_int8s) {
     EXPECT_EQ(y, 0b1111'1110'0000'0100);
 }
 
-TEST(example_sec, onetwothree) {
+TEST(example_spec, onetwothree) {
     onetwothree_parts ott_parts;
 
     ott_parts.one = 1;
@@ -39,7 +39,7 @@ TEST(example_sec, onetwothree) {
     EXPECT_EQ(ott_parts.three, 0b1101);
 }
 
-TEST(example_sec, timestwoaddone) {
+TEST(example_spec, timestwoaddone) {
     timestwoaddone_parts ttao_parts;
     uint8_t value;
 

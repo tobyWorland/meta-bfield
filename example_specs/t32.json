@@ -9,7 +9,7 @@
         ],
         "export": [
             "cond",
-            {"name": "simm8", "parts": ["imm8"], "signed": true}
+            {"name": "simm8", "parts": ["imm8", "0"], "signed": true}
         ]
     },
     {
@@ -20,7 +20,7 @@
             {"name": "imm11", "width": 11, "signed": true}
         ],
         "export": [
-            {"name": "simm11", "parts": ["imm11"], "signed": true}
+            {"name": "simm11", "parts": ["imm11", "0"], "signed": true}
         ]
     },
     {

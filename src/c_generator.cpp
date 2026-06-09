@@ -10,6 +10,19 @@
 #include <unordered_set>
 #include <unordered_map>
 
+constexpr std::string_view autogen_guard = "// AUTOGEN - DO NOT EDIT";
+
+static void check_autogenfile(std::filesystem::path path) {
+    if (std::filesystem::exists(path)) {
+        std::fstream file(path, std::ios_base::in);
+        std::string first_line;
+        std::getline(file, first_line);
+        if (first_line != autogen_guard) {
+            throw std::runtime_error(std::format("File '{}' does not start with the autogen guard", path.native()));
+        }
+    }
+}
+
 // 4 spaces = one indent
 constexpr std::string indent(unsigned n=1) {
     return std::string(4*n, ' ');
@@ -298,7 +311,9 @@ bool generate_fields(const std::string output_basepath, const std::vector<BField
     std::string header_path = output_basepath + ".h";
     std::string header_file = file_from_filepath(header_path);
 
-    // TODO: Check if exist and only overwrite if there is a comment at the top "// AUTOGEN - DO NOT EDIT"
+    check_autogenfile(source_path);
+    check_autogenfile(header_path);
+
     std::fstream source(source_path, std::ios_base::out);
     std::fstream header(header_path, std::ios_base::out);
     bool open_error{false};
@@ -317,8 +332,8 @@ bool generate_fields(const std::string output_basepath, const std::vector<BField
         return false;
     }
 
-    header << "// AUTOGEN - DO NOT EDIT\n\n";
-    source << "// AUTOGEN - DO NOT EDIT\n\n";
+    header << autogen_guard << "\n\n";
+    source << autogen_guard << "\n\n";
 
     header << "#pragma once\n\n" << "#include <stdbool.h>\n#include <stdint.h>\n\n";
     source << "#include \"" << header_file << "\"\n";

@@ -38,7 +38,11 @@ BField::BField(std::string name, unsigned width,
                 part_width_sum, m_width));
     }
 
-    // TODO: Cache shifts
+    unsigned width_left = this->width();
+    for (const auto &part_uniqptr : this->parts()) {
+        width_left -= part_uniqptr->width();
+        m_part_shift_map.insert({part_uniqptr.get(), width_left});
+    }
 }
 
 const std::string &BField::name() const {
@@ -62,7 +66,6 @@ unsigned BField::reserved_value() const { // TODO: Could be cached in constructo
 }
 
 bool BField::any_variable_parts() const {
-    // TODO: Could be !m_exports.empty()?
     return std::any_of(m_parts.cbegin(), m_parts.cend(), [](auto &part) {
         return part->variable() != nullptr;
     });
@@ -80,4 +83,8 @@ const std::vector<BExport> BField::exports() const {
 
 bool BField::is_part_exported(const IBPart *part) const {
     return m_exported_parts.contains(part);
+}
+
+unsigned BField::part_shift(const IBPart *part) const {
+    return m_part_shift_map.at(part);
 }

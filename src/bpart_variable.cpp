@@ -5,7 +5,7 @@
 
 BPartVariable::BPartVariable(std::string name, unsigned width,
                              std::string encode_expr, std::string decode_expr)
-    : BPart(width), m_name{std::move(name)}, m_encode_expr{std::move(encode_expr)},
+    : IBPart(width), m_name{std::move(name)}, m_encode_expr{std::move(encode_expr)},
       m_decode_expr{std::move(decode_expr)} {
     if (m_encode_expr.empty() != m_decode_expr.empty()) {
         throw std::invalid_argument(

@@ -4,7 +4,7 @@
 #include <stdexcept>
 
 BPartReserved::BPartReserved(unsigned width, unsigned reserved)
-    : BPart(width), m_reserved_value{reserved} {
+    : IBPart(width), m_reserved_value{reserved} {
     if (!in_bit_width(reserved, width)) {
         throw std::invalid_argument(
             std::format("Reserved value {} exceeds bit width of {}", reserved, width)

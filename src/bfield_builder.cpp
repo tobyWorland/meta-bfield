@@ -118,14 +118,14 @@ BField BFieldBuilder::build() {
 
     // TODO: Write test
     if (m_swapped) {
-        std::vector<std::unique_ptr<BPart>> swapped_parts;
+        std::vector<std::unique_ptr<IBPart>> swapped_parts;
         auto half_way_it = m_parts.begin();
         unsigned half_way_width{};
 
         swapped_parts.reserve(m_parts.size());
 
         for (; half_way_it != m_parts.cend(); ++half_way_it) {
-            const BPart *part = half_way_it->get();
+            const IBPart *part = half_way_it->get();
             half_way_width += part->width();
 
             if (half_way_width > (m_field_width.value() / 2)) {

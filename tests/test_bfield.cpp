@@ -10,7 +10,7 @@ TEST(bfield, bpart_reserved) {
 }
 
 TEST(bfield, bfield_parts_fall_short) {
-    std::vector<std::unique_ptr<BPart>> parts;
+    std::vector<std::unique_ptr<IBPart>> parts;
     std::vector<BExport> exports{};
     parts.push_back(std::make_unique<BPartReserved>(8, 0));
 
@@ -18,7 +18,7 @@ TEST(bfield, bfield_parts_fall_short) {
 }
 
 TEST(bfield, bfield_parts_too_long) {
-    std::vector<std::unique_ptr<BPart>> parts;
+    std::vector<std::unique_ptr<IBPart>> parts;
     std::vector<BExport> exports{};
     parts.push_back(std::make_unique<BPartReserved>(8, 0));
 
@@ -26,7 +26,7 @@ TEST(bfield, bfield_parts_too_long) {
 }
 
 TEST(bfield, bfield_success) {
-    std::vector<std::unique_ptr<BPart>> parts;
+    std::vector<std::unique_ptr<IBPart>> parts;
     std::vector<BExport> exports{};
     parts.push_back(std::make_unique<BPartReserved>(8, 0));
     parts.push_back(std::make_unique<BPartReserved>(8, 0));

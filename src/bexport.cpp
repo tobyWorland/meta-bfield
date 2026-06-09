@@ -5,7 +5,7 @@
 BExport::BExport(const BPartVariable *passthrough_part)
     : m_name{passthrough_part->name()}, m_width{passthrough_part->width()}, m_part_refs{passthrough_part},
       m_signed{}, m_passthrough{true} {}
-BExport::BExport(std::string name, std::vector<const BPart *> part_refs, bool is_signed, unsigned shift)
+BExport::BExport(std::string name, std::vector<const IBPart *> part_refs, bool is_signed, unsigned shift)
     : m_name{std::move(name)}, m_width{0}, m_part_refs{std::move(part_refs)}, m_signed{is_signed},
       m_passthrough{false}, m_shift{shift} {
     assert(!m_name.empty());
@@ -21,7 +21,7 @@ const std::string &BExport::name() const {
 unsigned BExport::width() const {
     return m_width;
 }
-const std::vector<const BPart*> BExport::part_refs() const {
+const std::vector<const IBPart*> BExport::part_refs() const {
     return m_part_refs;
 }
 bool BExport::is_passthrough() const {

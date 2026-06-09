@@ -1,10 +1,10 @@
 #pragma once
 
-#include "bpart.hpp"
+#include "ibpart.hpp"
 
 #include <string>
 
-class BPartVariable : public BPart {
+class BPartVariable : public IBPart {
     std::string m_name;
     std::string m_encode_expr;
     std::string m_decode_expr;

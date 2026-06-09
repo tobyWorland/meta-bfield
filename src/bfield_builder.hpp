@@ -17,13 +17,13 @@ public:
 class BFieldBuilder {
     std::optional<std::string> m_field_name;
     std::optional<unsigned> m_field_width;
-    std::vector<std::unique_ptr<BPart>> m_parts;
+    std::vector<std::unique_ptr<IBPart>> m_parts;
     std::vector<BExport> m_exports;
     bool m_swapped{false};
 
     // TODO: group these in a struct
     std::optional<std::string> m_new_export_name;
-    std::vector<const BPart*> m_new_export_part_refs;
+    std::vector<const IBPart*> m_new_export_part_refs;
     std::optional<bool> m_new_export_is_signed;
     std::optional<unsigned> m_new_export_optional_shift;
 
@@ -41,7 +41,7 @@ public:
     void set_swapped(); // TODO: Test
 
     template <class SpecificPart> void push_back_part(SpecificPart &&part) {
-        static_assert(std::is_base_of<BPart, SpecificPart>::value,
+        static_assert(std::is_base_of<IBPart, SpecificPart>::value,
                       "Push back part can only be used on classes that inherit from BPart");
         m_parts.push_back(std::make_unique<SpecificPart>(std::move(part)));
     }

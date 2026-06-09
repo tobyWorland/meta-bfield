@@ -5,11 +5,11 @@
 class BPartReserved;
 class BPartVariable;
 
-class BPart {
+class IBPart {
 protected:
     unsigned m_width;
 
-    BPart(unsigned width);
+    IBPart(unsigned width);
 public:
     virtual unsigned width() const;
 

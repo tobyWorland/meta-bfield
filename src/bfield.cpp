@@ -7,7 +7,7 @@
 #include <stdexcept>
 
 BField::BField(std::string name, unsigned width,
-               std::vector<std::unique_ptr<BPart>> parts,
+               std::vector<std::unique_ptr<IBPart>> parts,
                std::vector<BExport> exports)
     : m_name{std::move(name)}, m_width{width}, m_parts{std::move(parts)},
       m_exports{std::move(exports)} {
@@ -47,7 +47,7 @@ const std::string &BField::name() const {
 unsigned BField::width() const {
     return m_width;
 }
-const std::vector<std::unique_ptr<BPart>> &BField::parts() const {
+const std::vector<std::unique_ptr<IBPart>> &BField::parts() const {
     return m_parts;
 }
 unsigned BField::reserved_value() const { // TODO: Could be cached in constructor
@@ -78,6 +78,6 @@ const std::vector<BExport> BField::exports() const {
     return m_exports;
 }
 
-bool BField::is_part_exported(const BPart *part) const {
+bool BField::is_part_exported(const IBPart *part) const {
     return m_exported_parts.contains(part);
 }

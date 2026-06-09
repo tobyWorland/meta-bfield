@@ -1,9 +1,9 @@
 #pragma once
 
-#include "bpart.hpp"
+#include "ibpart.hpp"
 #include "util.hpp"
 
-class BPartReserved : public BPart {
+class BPartReserved : public IBPart {
     unsigned m_reserved_value = 0;
 
 public:

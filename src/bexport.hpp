@@ -1,6 +1,7 @@
 #pragma once
 
 #include "bpart.hpp"
+#include "bpart_variable.hpp"
 
 #include <string>
 #include <vector>
@@ -14,8 +15,8 @@ class BExport {
     unsigned m_shift;
 
 public:
-    BExport(const BPart *passthrough_part);
-    BExport(std::string name, std::vector<const BPart*> part_refs, bool is_signed, unsigned shift);
+    explicit BExport(const BPartVariable *passthrough_part);
+    explicit BExport(std::string name, std::vector<const BPart*> part_refs, bool is_signed, unsigned shift);
 
     const std::string &name() const;
     unsigned width() const;

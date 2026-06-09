@@ -1,17 +1,18 @@
 #include <gtest/gtest.h>
 
 #include <bfield.hpp>
+#include <bpart_reserved.hpp>
 #include <bfield_builder.hpp>
 
 TEST(bfield, bpart_reserved) {
-    EXPECT_NO_THROW(BPart(4, 5));
-    EXPECT_THROW(BPart(2, 5), std::invalid_argument);
+    EXPECT_NO_THROW(BPartReserved(4, 5));
+    EXPECT_THROW(BPartReserved(2, 5), std::invalid_argument);
 }
 
 TEST(bfield, bfield_parts_fall_short) {
     std::vector<std::unique_ptr<BPart>> parts;
     std::vector<BExport> exports{};
-    parts.push_back(std::make_unique<BPart>(8, 0));
+    parts.push_back(std::make_unique<BPartReserved>(8, 0));
 
     EXPECT_THROW(BField("short", 16, std::move(parts), std::move(exports)), std::invalid_argument);
 }
@@ -19,7 +20,7 @@ TEST(bfield, bfield_parts_fall_short) {
 TEST(bfield, bfield_parts_too_long) {
     std::vector<std::unique_ptr<BPart>> parts;
     std::vector<BExport> exports{};
-    parts.push_back(std::make_unique<BPart>(8, 0));
+    parts.push_back(std::make_unique<BPartReserved>(8, 0));
 
     EXPECT_THROW(BField("long", 4, std::move(parts), std::move(exports)), std::invalid_argument);
 }
@@ -27,8 +28,8 @@ TEST(bfield, bfield_parts_too_long) {
 TEST(bfield, bfield_success) {
     std::vector<std::unique_ptr<BPart>> parts;
     std::vector<BExport> exports{};
-    parts.push_back(std::make_unique<BPart>(8, 0));
-    parts.push_back(std::make_unique<BPart>(8, 0));
+    parts.push_back(std::make_unique<BPartReserved>(8, 0));
+    parts.push_back(std::make_unique<BPartReserved>(8, 0));
 
     EXPECT_NO_THROW(BField("pair", 16, std::move(parts), std::move(exports)));
 }
@@ -58,8 +59,8 @@ TEST(bfieldbuilder, success) {
 
     builder.set_field_name("pair");
     builder.set_field_width(16);
-    builder.push_back_part(BPart(8, 0));
-    builder.push_back_part(BPart(8, 0));
+    builder.push_back_part(BPartReserved(8, 0));
+    builder.push_back_part(BPartReserved(8, 0));
     EXPECT_NO_THROW(builder.build());
 }
 

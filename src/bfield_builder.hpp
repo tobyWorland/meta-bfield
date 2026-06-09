@@ -39,7 +39,12 @@ public:
     // words around, rather than doing this in the generated code just cut the
     // parts in half and swap the halves instead.
     void set_swapped(); // TODO: Test
-    void push_back_part(const BPart &part);
+
+    template <class SpecificPart> void push_back_part(SpecificPart &&part) {
+        static_assert(std::is_base_of<BPart, SpecificPart>::value,
+                      "Push back part can only be used on classes that inherit from BPart");
+        m_parts.push_back(std::make_unique<SpecificPart>(std::move(part)));
+    }
 
     void export_new();
     void export_set_name(std::string name);

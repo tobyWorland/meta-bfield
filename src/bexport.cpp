@@ -2,7 +2,7 @@
 
 #include <cassert>
 
-BExport::BExport(const BPart *passthrough_part)
+BExport::BExport(const BPartVariable *passthrough_part)
     : m_name{passthrough_part->name()}, m_width{passthrough_part->width()}, m_part_refs{passthrough_part},
       m_signed{}, m_passthrough{true} {}
 BExport::BExport(std::string name, std::vector<const BPart *> part_refs, bool is_signed, unsigned shift)

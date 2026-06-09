@@ -25,9 +25,6 @@ void BFieldBuilder::set_field_width(unsigned width) {
 void BFieldBuilder::set_swapped() {
     m_swapped = true;
 }
-void BFieldBuilder::push_back_part(const BPart &part) {
-    m_parts.push_back(std::make_unique<BPart>(part));
-}
 
 void BFieldBuilder::export_new() {
     m_new_export_name.reset();
@@ -43,25 +40,29 @@ void BFieldBuilder::export_set_name(std::string name) {
     m_new_export_name = std::move(name);
 }
 void BFieldBuilder::export_push_part(std::string part_name) {
+    // If the optional shift is set then we cannot accept any more parts
+    // The shift must occur at the end of the export's part list
     if (m_new_export_optional_shift) {
         throw BFieldBuilderError("Export cannot accept any more parts after a part of all 0s has been used");
     }
 
-    auto it = std::find_if(m_parts.cbegin(), m_parts.cend(),
-                           [&part_name](const auto &part) { return part->name() == part_name; });
-
-    if (it == m_parts.cend()) {
-        // Handle all zero part
-        if (std::all_of(part_name.cbegin(), part_name.cend(), [](char c) { return c == '0'; })) {
-            auto zero_count = part_name.size();
-            m_new_export_optional_shift = zero_count;
-            return;
-        }
-
-        throw BFieldBuilderError(std::format("Cannot export part '{}' as it doesn't exist.", part_name));
+    // Handle the all zero part
+    if (std::all_of(part_name.cbegin(), part_name.cend(), [](char c) { return c == '0'; })) {
+        auto zero_count = part_name.size();
+        m_new_export_optional_shift = zero_count;
+        return;
     }
 
-    m_new_export_part_refs.push_back(it->get());
+    // Look for a variable part with the name we want
+    for (const auto &part : m_parts) {
+        if (const BPartVariable *var_part = part.get()->variable_name_match(part_name)) {
+            m_new_export_part_refs.push_back(var_part);
+            return;
+        }
+    }
+
+    // Couldn't find a part in m_parts called part_name
+    throw BFieldBuilderError(std::format("Cannot export part '{}' as it doesn't exist.", part_name));
 }
 void BFieldBuilder::export_set_signed(bool is_signed) {
     if (m_new_export_is_signed) {
@@ -88,14 +89,20 @@ void BFieldBuilder::export_commit() {
 }
 
 void BFieldBuilder::export_commit_passthrough(std::string part_name) {
-    auto it = std::find_if(m_parts.cbegin(), m_parts.cend(),
-                           [&part_name](const auto &part) { return part->name() == part_name; });
+    const BPartVariable *passthrough_part = nullptr;
 
-    if (it == m_parts.cend()) {
+    for (const auto &part : m_parts) {
+        if (const BPartVariable *varpart = part.get()->variable_name_match(part_name)) {
+            passthrough_part = varpart;
+            break;
+        }
+    }
+
+    if (passthrough_part == nullptr) {
         throw BFieldBuilderError(std::format("Cannot export pass-through part '{}' as it doesn't exist.", part_name));
     }
 
-    m_exports.push_back(BExport(it->get()));
+    m_exports.push_back(BExport(passthrough_part));
 }
 
 BField BFieldBuilder::build() {

@@ -1,5 +1,7 @@
 #include "spec.hpp"
 
+#include "bpart_reserved.hpp"
+
 #include <boost/json.hpp>
 #include <fstream>
 #include <format>
@@ -89,14 +91,16 @@ void SpecReader::extract_parts(boost::json::value element_parts) {
                 expect_value_type(object.at("width").try_as_int64(),
                                   "Expect part width to be an int64");
             m_field_builder.push_back_part(
-                BPart(std::string(part_name.data()), part_width, encode_expr, decode_expr)
+                BPartVariable(std::string(part_name.data()), part_width, encode_expr, decode_expr)
                 );
             break;
         }
         case boost::json::kind::string:
         {
             auto reserved_binfield = boost_to_std_string(part_value.get_string());
-            m_field_builder.push_back_part(res_from_binstring(reserved_binfield));
+            m_field_builder.push_back_part(
+                BPartReserved(res_from_binstring(reserved_binfield))
+                );
             break;
         }
         default:

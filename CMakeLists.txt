@@ -16,6 +16,8 @@ add_library(bfield OBJECT
     src/bfield.cpp
     src/bfield_builder.cpp
     src/bpart.cpp
+    src/bpart_reserved.cpp
+    src/bpart_variable.cpp
     src/c_generator.cpp
     src/spec.cpp
     src/util.cpp

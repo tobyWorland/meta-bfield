@@ -1,5 +1,7 @@
 #include "bfield.hpp"
 
+#include "bpart_reserved.hpp"
+
 #include <cassert>
 #include <format>
 #include <stdexcept>
@@ -12,8 +14,10 @@ BField::BField(std::string name, unsigned width,
     if (m_exports.empty()) {
         // No exports - export all parts
         for (const auto &part : m_parts) {
-            m_exports.push_back(BExport(part.get()));
-            m_exported_parts.insert(part.get());
+            if (const auto *ptr = part.get()->variable()) {
+                m_exports.push_back(BExport(ptr));
+                m_exported_parts.insert(ptr);
+            }
         }
     } else {
         for (const auto &exp : m_exports) {
@@ -33,6 +37,8 @@ BField::BField(std::string name, unsigned width,
                 "Part widths only sum to {} instead of the field width {}",
                 part_width_sum, m_width));
     }
+
+    // TODO: Cache shifts
 }
 
 const std::string &BField::name() const {
@@ -44,12 +50,12 @@ unsigned BField::width() const {
 const std::vector<std::unique_ptr<BPart>> &BField::parts() const {
     return m_parts;
 }
-unsigned BField::reserved_value() const {
+unsigned BField::reserved_value() const { // TODO: Could be cached in constructor
     unsigned value{0};
     for (const auto &part : m_parts) {
         value <<= part->width();
-        if (part->is_reserved()) {
-            value |= part->reserved_value();
+        if (const BPartReserved *reserved = part->reserved()) {
+            value |= reserved->reserved_value();
         }
     }
     return value;
@@ -58,13 +64,13 @@ unsigned BField::reserved_value() const {
 bool BField::any_variable_parts() const {
     // TODO: Could be !m_exports.empty()?
     return std::any_of(m_parts.cbegin(), m_parts.cend(), [](auto &part) {
-        return !part->is_reserved();
+        return part->variable() != nullptr;
     });
 }
 
 bool BField::any_reserved_parts() const {
     return std::any_of(m_parts.cbegin(), m_parts.cend(), [](auto &part) {
-        return part->is_reserved();
+        return part->reserved() != nullptr;
     });
 }
 

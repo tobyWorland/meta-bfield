@@ -13,7 +13,19 @@ add_executable(test_c_t32_encoding test_c_t32_encoding.cpp "${CMAKE_BINARY_DIR}/
 target_link_libraries(test_c_t32_encoding GTest::gtest_main gen_t32_encoding)
 
 include(GoogleTest)
-gtest_discover_tests(test_bfield)
-gtest_discover_tests(test_c_prelude)
-gtest_discover_tests(test_c_example)
-gtest_discover_tests(test_c_t32_encoding)
+gtest_discover_tests(
+    test_bfield
+    XML_OUTPUT_DIR "${CMAKE_BINARY_DIR}/testresults"
+)
+gtest_discover_tests(
+    test_c_prelude
+    XML_OUTPUT_DIR "${CMAKE_BINARY_DIR}/testresults"
+)
+gtest_discover_tests(
+    test_c_example
+    XML_OUTPUT_DIR "${CMAKE_BINARY_DIR}/testresults"
+)
+gtest_discover_tests(
+    test_c_t32_encoding
+    XML_OUTPUT_DIR "${CMAKE_BINARY_DIR}/testresults"
+)

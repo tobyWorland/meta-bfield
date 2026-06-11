@@ -1,4 +1,4 @@
-#define BIT(N) (1UL << N)
+#define BIT(N) (1UL << (N))
 #define BIT_MASK(WIDTH) (BIT(WIDTH)-1)
 #define BIT_EXTRACT(VALUE, POSITION, WIDTH) (((VALUE) >> (POSITION)) & BIT_MASK(WIDTH))
 

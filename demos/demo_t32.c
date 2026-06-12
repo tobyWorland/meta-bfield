@@ -40,16 +40,26 @@ int main() {
 #endif
 
 #if 1
-    struct b_cond_t1_noit_parts bt1 = {};
-    bt1.cond = 1;
-    bt1.simm8 = -4;
-    printf("Using: simm11 %d\n", bt1.simm8);
+    struct bl_t1_parts parts = {};
+    parts.simm25 = -4;
 
-    uint16_t bt1out;
-    printf("B t1 Success? %u\n", encode_b_cond_t1_noit(&bt1out, &bt1));
-    printf("bt1 %04X\n", bt1out);
+    uint16_t narrow;
+    union {
+        uint32_t wide;
+        uint16_t wide_hw[2];
+    } w = {};
 
-    out(&bt1out, sizeof(bt1out));
+    unsigned ret = encode_bl_t1(&w.wide, &parts);
+
+    printf("Success? %u\n", ret != 0);
+    printf("narrow %04X\n", narrow);
+    printf("wide %04X %04X\n", w.wide_hw[0], w.wide_hw[1]);
+
+#if 0
+    out(&narrow, sizeof(narrow));
+#else
+    out(&w.wide, sizeof(w.wide));
+#endif
 #endif
 
     return 0;

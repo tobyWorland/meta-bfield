@@ -72,6 +72,34 @@
         ]
     },
     {
+        "name": "bl_t1",
+        "width": 32,
+        "swapped": true,
+        "parts": [
+            "11110",
+            {"name": "s", "width": 1},
+            {"name": "imm10", "width": 10},
+
+            "11",
+            {"name": "i1", "width": 1, "encode": "~$ ^ s", "decode": "~($ ^ s)"},
+            "1",
+            {"name": "i2", "width": 1, "encode": "~$ ^ s", "decode": "~($ ^ s)"},
+            {"name": "imm11", "width": 11}
+        ],
+        "export": [
+            {"name": "simm25", "parts": ["s", "i1", "i2", "imm10", "imm11", "0"], "signed": true}
+        ]
+    },
+    {
+        "name": "blx_t1",
+        "width": 16,
+        "parts": [
+            "010001 11 1",
+            {"name": "Rm", "width": 4},
+            "000"
+        ]
+    },
+    {
         "name": "bx_t1",
         "width": 16,
         "parts": [

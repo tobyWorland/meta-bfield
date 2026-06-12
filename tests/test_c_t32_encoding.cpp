@@ -146,7 +146,53 @@ TEST(t32_encoding_spec, b_t4) {
     EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
 }
 
-TEST(t32_encoding_spec, bxlr) {
+TEST(t32_encoding_spec, bl_t1) {
+    constexpr uint32_t bl_t1_pcoff4     = 0xF802'F000;
+    constexpr uint32_t bl_t1_pcoff_neg4 = 0xFFFE'F7FF;
+
+    uint32_t out;
+    bl_t1_parts parts_for_enc{};
+    bl_t1_parts parts_for_dec{};
+
+    EXPECT_TRUE(match_bl_t1(bl_t1_pcoff4));
+    EXPECT_TRUE(match_bl_t1(bl_t1_pcoff_neg4));
+
+    parts_for_enc.simm25 = 4;
+
+    EXPECT_EQ(encode_bl_t1(&out, &parts_for_enc), 32);
+    EXPECT_EQ(out, bl_t1_pcoff4);
+
+    parts_for_dec = decode_bl_t1(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+
+    parts_for_enc.simm25 = -4;
+
+    EXPECT_EQ(encode_bl_t1(&out, &parts_for_enc), 32);
+    EXPECT_EQ(out, bl_t1_pcoff_neg4);
+
+    parts_for_dec = decode_bl_t1(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+}
+
+TEST(t32_encoding_spec, blx_t1) {
+    constexpr uint16_t blx_r4 = 0x47A0; // BLX R4
+
+    uint16_t out;
+    blx_t1_parts parts_for_enc{};
+    blx_t1_parts parts_for_dec{};
+
+    EXPECT_TRUE(match_blx_t1(blx_r4));
+
+    parts_for_enc.Rm = 4; // LR
+
+    EXPECT_EQ(encode_blx_t1(&out, &parts_for_enc), 16);
+    EXPECT_EQ(out, blx_r4);
+
+    parts_for_dec = decode_blx_t1(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+}
+
+TEST(t32_encoding_spec, bx_t1) {
     constexpr uint16_t bxlr = 0x4770; // BX LR
 
     uint16_t out;

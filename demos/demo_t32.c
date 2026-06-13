@@ -40,8 +40,8 @@ int main() {
 #endif
 
 #if 1
-    struct bl_t1_parts parts = {};
-    parts.simm25 = -4;
+    struct push_t3_parts parts = {};
+    parts.Rt = 9;
 
     uint16_t narrow;
     union {
@@ -49,15 +49,15 @@ int main() {
         uint16_t wide_hw[2];
     } w = {};
 
-    unsigned ret = encode_bl_t1(&w.wide, &parts);
+    unsigned ret = encode_push_t3(&w.wide, &parts);
 
     printf("Success? %u\n", ret != 0);
-    printf("narrow %04X\n", narrow);
-    printf("wide %04X %04X\n", w.wide_hw[0], w.wide_hw[1]);
 
 #if 0
+    printf("narrow %04X\n", narrow);
     out(&narrow, sizeof(narrow));
 #else
+    printf("wide %04X %04X\n", w.wide_hw[0], w.wide_hw[1]);
     out(&w.wide, sizeof(w.wide));
 #endif
 #endif

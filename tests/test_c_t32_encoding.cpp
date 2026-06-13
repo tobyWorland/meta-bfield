@@ -216,5 +216,119 @@ TEST(t32_encoding_spec, bx_t1) {
 // TODO: MOV_i
 // TODO: MOV_r
 // TODO: MOVW
+
+TEST(t32_encoding_spec, pop_t1) {
+    constexpr uint16_t pop_t1_2_4_pc = 0xBD14; // POP {r2, r4, PC}
+
+    uint16_t out;
+    pop_t1_parts parts_for_enc{};
+    pop_t1_parts parts_for_dec{};
+
+    EXPECT_TRUE(match_pop_t1(pop_t1_2_4_pc));
+
+    parts_for_enc.regs = (1 << 2) | (1 << 4);
+    parts_for_enc.pc = 1;
+
+    EXPECT_EQ(encode_pop_t1(&out, &parts_for_enc), 16);
+    EXPECT_EQ(out, pop_t1_2_4_pc);
+
+    parts_for_dec = decode_pop_t1(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+}
+
+TEST(t32_encoding_spec, pop_t2) {
+    constexpr uint32_t pop_t2_pc_lr_10_6_3_1 = 0xC44A'E8BD; // POP {r1, r3, r6, r10, LR, PC}
+
+    uint32_t out;
+    pop_t2_parts parts_for_enc{};
+    pop_t2_parts parts_for_dec{};
+
+    EXPECT_TRUE(match_pop_t2(pop_t2_pc_lr_10_6_3_1));
+
+    parts_for_enc.regs = (1 << 10) | (1 << 6) | (1 << 3) | (1 << 1);
+    parts_for_enc.pc = 1;
+    parts_for_enc.lr = 1;
+
+    EXPECT_EQ(encode_pop_t2(&out, &parts_for_enc), 32);
+    EXPECT_EQ(out, pop_t2_pc_lr_10_6_3_1);
+
+    parts_for_dec = decode_pop_t2(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+}
+
+TEST(t32_encoding_spec, pop_t3) {
+    constexpr uint32_t pop_t3_r9 = 0x9B04'F85D; // POP {R9}
+
+    uint32_t out;
+    pop_t3_parts parts_for_enc{};
+    pop_t3_parts parts_for_dec{};
+
+    EXPECT_TRUE(match_pop_t3(pop_t3_r9));
+
+    parts_for_enc.Rt = 9;
+
+    EXPECT_EQ(encode_pop_t3(&out, &parts_for_enc), 32);
+    EXPECT_EQ(out, pop_t3_r9);
+
+    parts_for_dec = decode_pop_t3(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+}
+
+TEST(t32_encoding_spec, push_t1) {
+    constexpr uint16_t push_t1_2_4_lr = 0xB514; // PUSH {r2, r4, PC}
+
+    uint16_t out;
+    push_t1_parts parts_for_enc{};
+    push_t1_parts parts_for_dec{};
+
+    EXPECT_TRUE(match_push_t1(push_t1_2_4_lr));
+
+    parts_for_enc.regs = (1 << 2) | (1 << 4);
+    parts_for_enc.lr = 1;
+
+    EXPECT_EQ(encode_push_t1(&out, &parts_for_enc), 16);
+    EXPECT_EQ(out, push_t1_2_4_lr);
+
+    parts_for_dec = decode_push_t1(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+}
+
+TEST(t32_encoding_spec, push_t2) {
+    constexpr uint32_t push_t2_lr_10_6_3_1 = 0x444A'E92D; // PUSH {r1, r3, r6, r10, LR}
+
+    uint32_t out;
+    push_t2_parts parts_for_enc{};
+    push_t2_parts parts_for_dec{};
+
+    EXPECT_TRUE(match_push_t2(push_t2_lr_10_6_3_1));
+
+    parts_for_enc.regs = (1 << 10) | (1 << 6) | (1 << 3) | (1 << 1);
+    parts_for_enc.lr = 1;
+
+    EXPECT_EQ(encode_push_t2(&out, &parts_for_enc), 32);
+    EXPECT_EQ(out, push_t2_lr_10_6_3_1);
+
+    parts_for_dec = decode_push_t2(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+}
+
+TEST(t32_encoding_spec, push_t3) {
+    constexpr uint32_t push_t3_r9 = 0x9D04'F84D; // PUSH {R9}
+
+    uint32_t out;
+    push_t3_parts parts_for_enc{};
+    push_t3_parts parts_for_dec{};
+
+    EXPECT_TRUE(match_push_t3(push_t3_r9));
+
+    parts_for_enc.Rt = 9;
+
+    EXPECT_EQ(encode_push_t3(&out, &parts_for_enc), 32);
+    EXPECT_EQ(out, push_t3_r9);
+
+    parts_for_dec = decode_push_t3(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+}
+
 // TODO: SCV
 // TODO: UDF

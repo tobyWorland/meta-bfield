@@ -192,6 +192,72 @@
         ]
     },
     {
+        "name": "pop_t1",
+        "width": 16,
+        "parts": [
+            "1011 1 10",
+            {"name": "pc", "width": 1},
+            {"name": "regs", "width": 8}
+        ]
+    },
+    {
+        "name": "pop_t2",
+        "width": 32,
+        "swapped": true,
+        "parts": [
+            "11101 00 010 1 1 1101",
+
+            {"name": "pc", "width": 1},
+            {"name": "lr", "width": 1},
+            "0",
+            {"name": "regs", "width": 13}
+        ]
+    },
+    {
+        "name": "pop_t3",
+        "width": 32,
+        "swapped": true,
+        "parts": [
+            "11111 00 0 0 10 1 1101",
+
+            {"name": "Rt", "width": 4},
+            "1 011 00000100"
+        ]
+    },
+    {
+        "name": "push_t1",
+        "width": 16,
+        "parts": [
+            "1011 0 10",
+            {"name": "lr", "width": 1},
+            {"name": "regs", "width": 8}
+        ]
+    },
+    {
+        "name": "push_t2",
+        "width": 32,
+        "swapped": true,
+        "parts": [
+            "11101 00 100 1 0 1101",
+
+            "0",
+            {"name": "lr", "width": 1},
+            "0",
+            {"name": "regs", "width": 13}
+        ]
+    },
+    {
+        "name": "push_t3",
+        "width": 32,
+        "swapped": true,
+        "parts": [
+            "11111 00 0 0 10 0 1101",
+
+            {"name": "Rt", "width": 4},
+            "1 101 00000100"
+        ]
+    },
+    {
         "name": "svc_t1",
         "width": 16,
         "parts": [

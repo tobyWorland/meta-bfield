@@ -34,8 +34,8 @@ BField::BField(std::string name, unsigned width,
     if (part_width_sum != m_width) {
         throw std::invalid_argument(
             std::format(
-                "Part widths only sum to {} instead of the field width {}",
-                part_width_sum, m_width));
+                "In {}: Part widths only sum to {} instead of the field width {}",
+                m_name, part_width_sum, m_width));
     }
 
     unsigned width_left = this->width();

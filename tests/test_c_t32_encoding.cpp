@@ -575,7 +575,23 @@ TEST(t32_encoding_spec, push_t3) {
     EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
 }
 
-// TODO: SCV
+TEST(t32_encoding_spec, svc_t1) {
+    constexpr uint16_t svc_t1_74 = 0xDF4A; // SVC 74
+
+    uint16_t out;
+    svc_t1_parts parts_for_enc{};
+    svc_t1_parts parts_for_dec{};
+
+    EXPECT_TRUE(match_svc_t1(svc_t1_74));
+
+    parts_for_enc.imm8 = 74;
+
+    EXPECT_EQ(encode_svc_t1(&out, &parts_for_enc), 16);
+    EXPECT_EQ(out, svc_t1_74);
+
+    parts_for_dec = decode_svc_t1(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+}
 
 TEST(t32_encoding_spec, udf_t1) {
     constexpr uint16_t udf_t1_21 = 0xDE15; // UDF 21

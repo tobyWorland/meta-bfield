@@ -576,4 +576,39 @@ TEST(t32_encoding_spec, push_t3) {
 }
 
 // TODO: SCV
-// TODO: UDF
+
+TEST(t32_encoding_spec, udf_t1) {
+    constexpr uint16_t udf_t1_21 = 0xDE15; // UDF 21
+
+    uint16_t out;
+    udf_t1_parts parts_for_enc{};
+    udf_t1_parts parts_for_dec{};
+
+    EXPECT_TRUE(match_udf_t1(udf_t1_21));
+
+    parts_for_enc.imm8 = 21;
+
+    EXPECT_EQ(encode_udf_t1(&out, &parts_for_enc), 16);
+    EXPECT_EQ(out, udf_t1_21);
+
+    parts_for_dec = decode_udf_t1(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+}
+
+TEST(t32_encoding_spec, udf_t2) {
+    constexpr uint32_t udf_t2_1234h = 0xA234'F7F1; // UDF.W 0x1234
+
+    uint32_t out;
+    udf_t2_parts parts_for_enc{};
+    udf_t2_parts parts_for_dec{};
+
+    EXPECT_TRUE(match_udf_t2(udf_t2_1234h));
+
+    parts_for_enc.imm16 = 0x1234;
+
+    EXPECT_EQ(encode_udf_t2(&out, &parts_for_enc), 32);
+    EXPECT_EQ(out, udf_t2_1234h);
+
+    parts_for_dec = decode_udf_t2(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+}

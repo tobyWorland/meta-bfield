@@ -210,7 +210,23 @@ TEST(t32_encoding_spec, bx_t1) {
     EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
 }
 
-// TODO: BKPT
+TEST(t32_encoding_spec, bkpt_t1) {
+    constexpr uint16_t bkpt_t1_42 = 0xBE2A; // BKPT 42
+
+    uint16_t out;
+    bkpt_t1_parts parts_for_enc{};
+    bkpt_t1_parts parts_for_dec{};
+
+    EXPECT_TRUE(match_bkpt_t1(bkpt_t1_42));
+
+    parts_for_enc.imm8 = 42;
+
+    EXPECT_EQ(encode_bkpt_t1(&out, &parts_for_enc), 16);
+    EXPECT_EQ(out, bkpt_t1_42);
+
+    parts_for_dec = decode_bkpt_t1(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+}
 
 TEST(t32_encoding_spec, ldr_i_t1) {
     constexpr uint16_t ldr_i_t1_r4_r2_4 = 0x6854; // LDR r4, [r2, 4]

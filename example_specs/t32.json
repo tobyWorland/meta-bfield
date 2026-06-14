@@ -389,6 +389,9 @@
 
             "1 010",
             {"name": "imm12", "width": 12}
+        ],
+        "export": [
+            {"name": "imm16", "parts": ["imm4", "imm12"], "signed": false}
         ]
     }
 ]

@@ -29,7 +29,7 @@
         "swapped": true,
         "parts": [
             "11110",
-            {"name": "s", "width": 1},
+            {"name": "sign", "width": 1},
             {"name": "cond", "width": 4},
             {"name": "imm6", "width": 6},
 
@@ -41,7 +41,7 @@
         ],
         "export": [
             "cond",
-            {"name": "simm21", "parts": ["s", "j2", "j1", "imm6", "imm11", "0"], "signed": true}
+            {"name": "simm21", "parts": ["sign", "j2", "j1", "imm6", "imm11", "0"], "signed": true}
         ]
     },
     {
@@ -50,17 +50,17 @@
         "swapped": true,
         "parts": [
             "11110",
-            {"name": "s", "width": 1},
+            {"name": "sign", "width": 1},
             {"name": "imm10", "width": 10},
 
             "10",
-            {"name": "i1", "width": 1, "encode": "~$ ^ s", "decode": "~($ ^ s)"},
+            {"name": "i1", "width": 1, "encode": "~$ ^ sign", "decode": "~($ ^ sign)"},
             "1",
-            {"name": "i2", "width": 1, "encode": "~$ ^ s", "decode": "~($ ^ s)"},
+            {"name": "i2", "width": 1, "encode": "~$ ^ sign", "decode": "~($ ^ sign)"},
             {"name": "imm11", "width": 11}
         ],
         "export": [
-            {"name": "simm25", "parts": ["s", "i1", "i2", "imm10", "imm11", "0"], "signed": true}
+            {"name": "simm25", "parts": ["sign", "i1", "i2", "imm10", "imm11", "0"], "signed": true}
         ]
     },
     {
@@ -77,17 +77,17 @@
         "swapped": true,
         "parts": [
             "11110",
-            {"name": "s", "width": 1},
+            {"name": "sign", "width": 1},
             {"name": "imm10", "width": 10},
 
             "11",
-            {"name": "i1", "width": 1, "encode": "~$ ^ s", "decode": "~($ ^ s)"},
+            {"name": "i1", "width": 1, "encode": "~$ ^ sign", "decode": "~($ ^ sign)"},
             "1",
-            {"name": "i2", "width": 1, "encode": "~$ ^ s", "decode": "~($ ^ s)"},
+            {"name": "i2", "width": 1, "encode": "~$ ^ sign", "decode": "~($ ^ sign)"},
             {"name": "imm11", "width": 11}
         ],
         "export": [
-            {"name": "simm25", "parts": ["s", "i1", "i2", "imm10", "imm11", "0"], "signed": true}
+            {"name": "simm25", "parts": ["sign", "i1", "i2", "imm10", "imm11", "0"], "signed": true}
         ]
     },
     {

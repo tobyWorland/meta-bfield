@@ -109,6 +109,112 @@
         ]
     },
     {
+        "name": "ldr_i_t1",
+        "width": 16,
+        "parts": [
+            "011 0 1",
+            {"name": "_imm5", "width": 5},
+            {"name": "Rn", "width": 3},
+            {"name": "Rt", "width": 3}
+        ],
+        "export": [
+            "Rt",
+            "Rn",
+            {"name": "imm7", "parts": ["_imm5", "00"], "signed": false}
+        ]
+    },
+    {
+        "name": "ldr_i_t2_sponly",
+        "width": 16,
+        "parts": [
+            "1001 1",
+            {"name": "Rt", "width": 3},
+            {"name": "_imm8", "width": 8}
+        ],
+        "export": [
+            "Rt",
+            {"name": "imm10", "parts": ["_imm8", "00"], "signed": false}
+        ]
+    },
+    {
+        "name": "ldr_i_t3",
+        "width": 32,
+        "swapped": true,
+        "parts": [
+            "11111 00 0 1 10 1",
+            {"name": "Rn", "width": 4},
+
+            {"name": "Rt", "width": 4},
+            {"name": "imm12", "width": 12}
+        ]
+    },
+    {
+        "name": "ldr_i_t4",
+        "width": 32,
+        "swapped": true,
+        "parts": [
+            "11111 00 0 0 10 1",
+            {"name": "Rn", "width": 4},
+
+            {"name": "Rt", "width": 4},
+            "1",
+            {"name": "index", "width": 1},
+            {"name": "add", "width": 1},
+            {"name": "writeback", "width": 1},
+            {"name": "imm8", "width": 8}
+        ]
+    },
+    {
+        "name": "ldr_lit_t1",
+        "width": 16,
+        "parts": [
+            "01001",
+            {"name": "Rt", "width": 3},
+            {"name": "_imm8", "width": 8}
+        ],
+        "export": [
+            "Rt",
+            {"name": "imm10", "parts": ["_imm8", "00"], "signed": false}
+        ]
+    },
+    {
+        "name": "ldr_lit_t2",
+        "width": 32,
+        "swapped": true,
+        "parts": [
+            "11111 00 0",
+            {"name": "add", "width": 1},
+            "10 1 1111",
+
+            {"name": "Rt", "width": 4},
+            {"name": "imm12", "width": 12}
+        ]
+    },
+    {
+        "name": "ldr_r_t1",
+        "width": 16,
+        "parts": [
+            "0101 100",
+            {"name": "Rm", "width": 3},
+            {"name": "Rn", "width": 3},
+            {"name": "Rt", "width": 3}
+        ]
+    },
+    {
+        "name": "ldr_r_t2_lsl",
+        "width": 32,
+        "swapped": true,
+        "parts": [
+            "11111 00 0 0 10 1",
+            {"name": "Rn", "width": 4},
+
+            {"name": "Rt", "width": 4},
+            "0 00000",
+            {"name": "lsl_shift_imm2", "width": 2},
+            {"name": "Rm", "width": 4}
+        ]
+    },
+    {
         "name": "nop_t1",
         "width": 16,
         "parts": [

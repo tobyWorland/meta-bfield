@@ -211,6 +211,235 @@ TEST(t32_encoding_spec, bx_t1) {
 }
 
 // TODO: BKPT
+
+TEST(t32_encoding_spec, ldr_i_t1) {
+    constexpr uint16_t ldr_i_t1_r4_r2_4 = 0x6854; // LDR r4, [r2, 4]
+
+    uint16_t out;
+    ldr_i_t1_parts parts_for_enc{};
+    ldr_i_t1_parts parts_for_dec{};
+
+    EXPECT_TRUE(match_ldr_i_t1(ldr_i_t1_r4_r2_4));
+
+    parts_for_enc.Rt = 4;
+    parts_for_enc.Rn = 2;
+    parts_for_enc.imm7 = 4;
+
+    EXPECT_EQ(encode_ldr_i_t1(&out, &parts_for_enc), 16);
+    EXPECT_EQ(out, ldr_i_t1_r4_r2_4);
+
+    parts_for_dec = decode_ldr_i_t1(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+}
+
+TEST(t32_encoding_spec, ldr_i_t2_sponly) {
+    constexpr uint16_t ldr_i_t2_sponly_r4_sp_4 = 0x9C01; // LDR r4, [SP, 4]
+
+    uint16_t out;
+    ldr_i_t2_sponly_parts parts_for_enc{};
+    ldr_i_t2_sponly_parts parts_for_dec{};
+
+    EXPECT_TRUE(match_ldr_i_t2_sponly(ldr_i_t2_sponly_r4_sp_4));
+
+    parts_for_enc.Rt = 4;
+    parts_for_enc.imm10 = 4;
+
+    EXPECT_EQ(encode_ldr_i_t2_sponly(&out, &parts_for_enc), 16);
+    EXPECT_EQ(out, ldr_i_t2_sponly_r4_sp_4);
+
+    parts_for_dec = decode_ldr_i_t2_sponly(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+}
+
+TEST(t32_encoding_spec, ldr_i_t3) {
+    constexpr uint32_t ldr_i_t3_r7_r8_4 = 0x7004'F8D8; // LDR.W r7, [r8, 4]
+
+    uint32_t out;
+    ldr_i_t3_parts parts_for_enc{};
+    ldr_i_t3_parts parts_for_dec{};
+
+    EXPECT_TRUE(match_ldr_i_t3(ldr_i_t3_r7_r8_4));
+
+    parts_for_enc.Rt = 7;
+    parts_for_enc.Rn = 8;
+    parts_for_enc.imm12 = 4;
+
+    EXPECT_EQ(encode_ldr_i_t3(&out, &parts_for_enc), 32);
+    EXPECT_EQ(out, ldr_i_t3_r7_r8_4);
+
+    parts_for_dec = decode_ldr_i_t3(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+}
+
+TEST(t32_encoding_spec, ldr_i_t4_negoff) {
+    constexpr uint32_t ldr_i_t4_r7_r8_neg4 = 0x7C04'F858; // LDR.W r7, [r8, -4]
+
+    uint32_t out;
+    ldr_i_t4_parts parts_for_enc{};
+    ldr_i_t4_parts parts_for_dec{};
+
+    EXPECT_TRUE(match_ldr_i_t4(ldr_i_t4_r7_r8_neg4));
+
+    parts_for_enc.Rt = 7;
+    parts_for_enc.Rn = 8;
+    parts_for_enc.imm8 = 4;
+    parts_for_enc.index = 1;
+    parts_for_enc.add = 0;
+    parts_for_enc.writeback = 0;
+
+    EXPECT_EQ(encode_ldr_i_t4(&out, &parts_for_enc), 32);
+    EXPECT_EQ(out, ldr_i_t4_r7_r8_neg4);
+
+    parts_for_dec = decode_ldr_i_t4(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+}
+
+TEST(t32_encoding_spec, ldr_i_t4_preindex) {
+    constexpr uint32_t ldr_i_t4_r7_r8_neg4 = 0x7F04'F858; // LDR.W r7, [r8, 4]!
+
+    uint32_t out;
+    ldr_i_t4_parts parts_for_enc{};
+    ldr_i_t4_parts parts_for_dec{};
+
+    EXPECT_TRUE(match_ldr_i_t4(ldr_i_t4_r7_r8_neg4));
+
+    parts_for_enc.Rt = 7;
+    parts_for_enc.Rn = 8;
+    parts_for_enc.imm8 = 4;
+    parts_for_enc.index = 1;
+    parts_for_enc.add = 1;
+    parts_for_enc.writeback = 1;
+
+    EXPECT_EQ(encode_ldr_i_t4(&out, &parts_for_enc), 32);
+    EXPECT_EQ(out, ldr_i_t4_r7_r8_neg4);
+
+    parts_for_dec = decode_ldr_i_t4(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+}
+
+TEST(t32_encoding_spec, ldr_i_t4_postindex) {
+    constexpr uint32_t ldr_i_t4_r7_r8_neg4 = 0x7B04'F858; // LDR.W r7, [r8], 4
+
+    uint32_t out;
+    ldr_i_t4_parts parts_for_enc{};
+    ldr_i_t4_parts parts_for_dec{};
+
+    EXPECT_TRUE(match_ldr_i_t4(ldr_i_t4_r7_r8_neg4));
+
+    parts_for_enc.Rt = 7;
+    parts_for_enc.Rn = 8;
+    parts_for_enc.imm8 = 4;
+    parts_for_enc.index = 0;
+    parts_for_enc.add = 1;
+    parts_for_enc.writeback = 1;
+
+    EXPECT_EQ(encode_ldr_i_t4(&out, &parts_for_enc), 32);
+    EXPECT_EQ(out, ldr_i_t4_r7_r8_neg4);
+
+    parts_for_dec = decode_ldr_i_t4(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+}
+
+TEST(t32_encoding_spec, ldr_lit_t1) {
+    constexpr uint16_t ldr_lit_t1_r2_pc_4 = 0x4A01; // LDR r2, [pc, 4]
+
+    uint16_t out;
+    ldr_lit_t1_parts parts_for_enc{};
+    ldr_lit_t1_parts parts_for_dec{};
+
+    EXPECT_TRUE(match_ldr_lit_t1(ldr_lit_t1_r2_pc_4));
+
+    parts_for_enc.Rt = 2;
+    parts_for_enc.imm10 = 4;
+
+    EXPECT_EQ(encode_ldr_lit_t1(&out, &parts_for_enc), 16);
+    EXPECT_EQ(out, ldr_lit_t1_r2_pc_4);
+
+    parts_for_dec = decode_ldr_lit_t1(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+}
+
+TEST(t32_encoding_spec, ldr_lit_t2_add) {
+    constexpr uint32_t ldr_lit_t2_r8_1 = 0x8001'F8DF; // LDR.W r8, [pc, 1]
+
+    uint32_t out;
+    ldr_lit_t2_parts parts_for_enc{};
+    ldr_lit_t2_parts parts_for_dec{};
+
+    EXPECT_TRUE(match_ldr_lit_t2(ldr_lit_t2_r8_1));
+
+    parts_for_enc.Rt = 8;
+    parts_for_enc.add = 1;
+    parts_for_enc.imm12 = 1;
+
+    EXPECT_EQ(encode_ldr_lit_t2(&out, &parts_for_enc), 32);
+    EXPECT_EQ(out, ldr_lit_t2_r8_1);
+
+    parts_for_dec = decode_ldr_lit_t2(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+}
+
+TEST(t32_encoding_spec, ldr_lit_t2_sub) {
+    constexpr uint32_t ldr_lit_t2_r8_1 = 0x8001'F85F; // LDR.W r8, [pc, -1]
+
+    uint32_t out;
+    ldr_lit_t2_parts parts_for_enc{};
+    ldr_lit_t2_parts parts_for_dec{};
+
+    EXPECT_TRUE(match_ldr_lit_t2(ldr_lit_t2_r8_1));
+
+    parts_for_enc.Rt = 8;
+    parts_for_enc.add = 0;
+    parts_for_enc.imm12 = 1;
+
+    EXPECT_EQ(encode_ldr_lit_t2(&out, &parts_for_enc), 32);
+    EXPECT_EQ(out, ldr_lit_t2_r8_1);
+
+    parts_for_dec = decode_ldr_lit_t2(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+}
+
+TEST(t32_encoding_spec, ldr_r_t1) {
+    constexpr uint16_t ldr_r_t1_r1_r2_r3 = 0x58d1; // LDR r1, [r2, r3]
+
+    uint16_t out;
+    ldr_r_t1_parts parts_for_enc{};
+    ldr_r_t1_parts parts_for_dec{};
+
+    EXPECT_TRUE(match_ldr_r_t1(ldr_r_t1_r1_r2_r3));
+
+    parts_for_enc.Rt = 1;
+    parts_for_enc.Rn = 2;
+    parts_for_enc.Rm = 3;
+
+    EXPECT_EQ(encode_ldr_r_t1(&out, &parts_for_enc), 16);
+    EXPECT_EQ(out, ldr_r_t1_r1_r2_r3);
+
+    parts_for_dec = decode_ldr_r_t1(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+}
+
+TEST(t32_encoding_spec, ldr_r_t2_lsl) {
+    constexpr uint32_t ldr_r_t2_r1_r2_r3_lsl2 = 0x1023'F852; // LDR.W r1, [r2, r3, LSL 2]
+
+    uint32_t out;
+    ldr_r_t2_lsl_parts parts_for_enc{};
+    ldr_r_t2_lsl_parts parts_for_dec{};
+
+    EXPECT_TRUE(match_ldr_r_t2_lsl(ldr_r_t2_r1_r2_r3_lsl2));
+
+    parts_for_enc.Rt = 1;
+    parts_for_enc.Rn = 2;
+    parts_for_enc.Rm = 3;
+    parts_for_enc.lsl_shift_imm2 = 2;
+
+    EXPECT_EQ(encode_ldr_r_t2_lsl(&out, &parts_for_enc), 32);
+    EXPECT_EQ(out, ldr_r_t2_r1_r2_r3_lsl2);
+
+    parts_for_dec = decode_ldr_r_t2_lsl(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+}
+
 // TODO: NOP
 // TODO: NOP.W
 // TODO: MOV_i

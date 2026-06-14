@@ -456,8 +456,28 @@ TEST(t32_encoding_spec, ldr_r_t2_lsl) {
     EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
 }
 
-// TODO: NOP
-// TODO: NOP.W
+TEST(t32_encoding_spec, nop_t1) {
+    constexpr uint16_t nop_t1 = 0xBF00; // NOP
+
+    uint16_t out;
+
+    EXPECT_TRUE(match_nop_t1(nop_t1));
+
+    EXPECT_EQ(encode_nop_t1(&out), 16);
+    EXPECT_EQ(out, nop_t1);
+}
+
+TEST(t32_encoding_spec, nop_t2) {
+    constexpr uint32_t nop_t2 = 0x8000'F3AF; // NOP.W
+
+    uint32_t out;
+
+    EXPECT_TRUE(match_nop_t2(nop_t2));
+
+    EXPECT_EQ(encode_nop_t2(&out), 32);
+    EXPECT_EQ(out, nop_t2);
+}
+
 // TODO: MOV_i
 // TODO: MOV_r
 // TODO: MOVW

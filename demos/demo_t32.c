@@ -40,11 +40,10 @@ int main() {
 #endif
 
 #if 1
-    struct ldr_r_t2_lsl_parts parts = {};
-    parts.Rt = 1;
-    parts.Rn = 2;
-    parts.Rm = 3;
-    parts.lsl_shift_imm2 = 2;
+    struct mov_r_t3_opt_s_parts parts = {};
+    parts.setflags = 1;
+    parts.Rd = 8;
+    parts.Rm = 9;
 
     uint16_t narrow;
     union {
@@ -52,7 +51,7 @@ int main() {
         uint16_t wide_hw[2];
     } w = {};
 
-    unsigned ret = encode_ldr_r_t2_lsl(&w.wide, &parts);
+    unsigned ret = encode_mov_r_t3_opt_s(&w.wide, &parts);
 
     printf("Success? %u\n", ret != 0);
 

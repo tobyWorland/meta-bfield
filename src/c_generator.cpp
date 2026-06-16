@@ -56,7 +56,8 @@ void struct_from_field(std::fstream &file, const BField &field) {
             const BPartVariable *var_part = exp.part_refs()[0]->variable();
             if (var_part) {
                 assert(var_part->width() <= 32);
-                file << indent() << type_from_width(var_part->width()) << " ";
+                // Should be large to allow failing the encoding, otherwise truncation could cause an encoding to wrongly succeed
+                file << indent() << "uint32_t ";
                 file << var_part->name() << ";\n";
             }
         } else {

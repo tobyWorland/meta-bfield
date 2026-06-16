@@ -51,3 +51,18 @@ TEST(example_spec, timestwoaddone) {
     ttao_parts = decode_timestwoaddone(value);
     EXPECT_EQ(ttao_parts.value, 8);
 }
+
+TEST(example_spec, toosmall) {
+    uint16_t y = 0;
+
+    toosmall_parts toosmall_parts;
+    toosmall_parts.a = 0x1234; // Too big - should fail encoding
+    toosmall_parts.b = 2;
+
+    EXPECT_EQ(encode_toosmall(&y, &toosmall_parts), 0);
+    EXPECT_EQ(y, 0);
+
+    toosmall_parts.a = 1;
+    EXPECT_EQ(encode_toosmall(&y, &toosmall_parts), 16);
+    EXPECT_EQ(y, 0x0102);
+}

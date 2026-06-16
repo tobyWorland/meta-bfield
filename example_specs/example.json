@@ -35,5 +35,13 @@
         "export": [
             {"name": "value", "parts": ["x", "0"], "signed": false}
         ]
+    },
+    {
+        "name": "toosmall",
+        "width": 16,
+        "parts": [
+            {"name": "a", "width": 8},
+            {"name": "b", "width": 8}
+        ]
     }
 ]

@@ -885,21 +885,21 @@ TEST(t32_encoding_spec, subs_i_t1) {
 }
 
 TEST(t32_encoding_spec, subs_i_t2) {
-    constexpr uint16_t sub_i_t2_r1_r1_3 = 0x3903; // SUB R1, R1, 3
+    constexpr uint16_t subs_i_t2_r1_r1_3 = 0x3903; // SUBS R1, R1, 3
 
     uint16_t out;
-    sub_i_t2_parts parts_for_enc{};
-    sub_i_t2_parts parts_for_dec{};
+    subs_i_t2_parts parts_for_enc{};
+    subs_i_t2_parts parts_for_dec{};
 
-    EXPECT_TRUE(match_sub_i_t2(sub_i_t2_r1_r1_3));
+    EXPECT_TRUE(match_subs_i_t2(subs_i_t2_r1_r1_3));
 
     parts_for_enc.Rdn = 1;
     parts_for_enc.imm8 = 3;
 
-    EXPECT_EQ(encode_sub_i_t2(&out, &parts_for_enc), 16);
-    EXPECT_EQ(out, sub_i_t2_r1_r1_3);
+    EXPECT_EQ(encode_subs_i_t2(&out, &parts_for_enc), 16);
+    EXPECT_EQ(out, subs_i_t2_r1_r1_3);
 
-    parts_for_dec = decode_sub_i_t2(out);
+    parts_for_dec = decode_subs_i_t2(out);
     EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
 }
 

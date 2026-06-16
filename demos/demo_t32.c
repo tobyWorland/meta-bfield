@@ -40,7 +40,7 @@ int main() {
 #endif
 
 #if 1
-    struct adds_i_t2_parts parts = {};
+    struct subs_i_t2_parts parts = {};
     parts.Rdn = 1;
     parts.imm8 = 3;
 
@@ -50,7 +50,7 @@ int main() {
         uint16_t wide_hw[2];
     } w = {};
 
-    unsigned ret = encode_adds_i_t2(&narrow, &parts);
+    unsigned ret = encode_subs_i_t2(&narrow, &parts);
 
     printf("Success? %u\n", ret != 0);
 

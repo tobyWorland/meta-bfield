@@ -40,9 +40,8 @@ int main() {
 #endif
 
 #if 1
-    struct mov_r_t3_opt_s_parts parts = {};
-    parts.setflags = 1;
-    parts.Rd = 8;
+    struct cmp_r_t2_parts parts = {};
+    parts.Rn = 10;
     parts.Rm = 9;
 
     uint16_t narrow;
@@ -51,11 +50,11 @@ int main() {
         uint16_t wide_hw[2];
     } w = {};
 
-    unsigned ret = encode_mov_r_t3_opt_s(&w.wide, &parts);
+    unsigned ret = encode_cmp_r_t2(&narrow, &parts);
 
     printf("Success? %u\n", ret != 0);
 
-#if 0
+#if 1
     printf("narrow %04X\n", narrow);
     out(&narrow, sizeof(narrow));
 #else

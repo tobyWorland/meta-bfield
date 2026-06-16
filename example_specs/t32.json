@@ -109,6 +109,38 @@
         ]
     },
     {
+        "name": "cmp_i_t1",
+        "width": 16,
+        "parts": [
+            "001 01",
+            {"name": "Rn", "width": 3},
+            {"name": "imm8", "width": 8}
+        ]
+    },
+    {
+        "name": "cmp_r_t1",
+        "width": 16,
+        "parts": [
+            "010000 1010",
+            {"name": "Rm", "width": 3},
+            {"name": "Rn", "width": 3}
+        ]
+    },
+    {
+        "name": "cmp_r_t2",
+        "width": 16,
+        "parts": [
+            "010001 01",
+            {"name": "Rn_3", "width": 1},
+            {"name": "Rm", "width": 4},
+            {"name": "Rn_2_0", "width": 3}
+        ],
+        "export": [
+            {"name": "Rn", "parts": ["Rn_3", "Rn_2_0"], "signed": false},
+            "Rm"
+        ]
+    },
+    {
         "name": "ldr_i_t1",
         "width": 16,
         "parts": [

@@ -228,6 +228,63 @@ TEST(t32_encoding_spec, bkpt_t1) {
     EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
 }
 
+TEST(t32_encoding_spec, cmp_i_t1) {
+    constexpr uint16_t cmp_i_t1_r1_10 = 0x290A; // CMP R1, 10
+
+    uint16_t out;
+    cmp_i_t1_parts parts_for_enc{};
+    cmp_i_t1_parts parts_for_dec{};
+
+    EXPECT_TRUE(match_cmp_i_t1(cmp_i_t1_r1_10));
+
+    parts_for_enc.Rn = 1;
+    parts_for_enc.imm8 = 10;
+
+    EXPECT_EQ(encode_cmp_i_t1(&out, &parts_for_enc), 16);
+    EXPECT_EQ(out, cmp_i_t1_r1_10);
+
+    parts_for_dec = decode_cmp_i_t1(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+}
+
+TEST(t32_encoding_spec, cmp_r_t1) {
+    constexpr uint16_t cmp_r_t1_r1_r2 = 0x4291; // CMP R1, R2
+
+    uint16_t out;
+    cmp_r_t1_parts parts_for_enc{};
+    cmp_r_t1_parts parts_for_dec{};
+
+    EXPECT_TRUE(match_cmp_r_t1(cmp_r_t1_r1_r2));
+
+    parts_for_enc.Rn = 1;
+    parts_for_enc.Rm = 2;
+
+    EXPECT_EQ(encode_cmp_r_t1(&out, &parts_for_enc), 16);
+    EXPECT_EQ(out, cmp_r_t1_r1_r2);
+
+    parts_for_dec = decode_cmp_r_t1(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+}
+
+TEST(t32_encoding_spec, cmp_r_t2) {
+    constexpr uint16_t cmp_r_t2_r1_r2 = 0x45CA; // CMP R10, R9
+
+    uint16_t out;
+    cmp_r_t2_parts parts_for_enc{};
+    cmp_r_t2_parts parts_for_dec{};
+
+    EXPECT_TRUE(match_cmp_r_t2(cmp_r_t2_r1_r2));
+
+    parts_for_enc.Rn = 10;
+    parts_for_enc.Rm = 9;
+
+    EXPECT_EQ(encode_cmp_r_t2(&out, &parts_for_enc), 16);
+    EXPECT_EQ(out, cmp_r_t2_r1_r2);
+
+    parts_for_dec = decode_cmp_r_t2(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+}
+
 TEST(t32_encoding_spec, ldr_i_t1) {
     constexpr uint16_t ldr_i_t1_r4_r2_4 = 0x6854; // LDR r4, [r2, 4]
 

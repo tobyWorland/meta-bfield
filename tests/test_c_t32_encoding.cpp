@@ -50,22 +50,22 @@ TEST(t32_encoding_spec, adds_i_t1) {
     EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
 }
 
-TEST(t32_encoding_spec, add_i_t2) {
-    constexpr uint16_t add_i_t2_r1_r1_4 = 0x3104; // ADD R1, R1, 4
+TEST(t32_encoding_spec, adds_i_t2) {
+    constexpr uint16_t adds_i_t2_r1_r1_4 = 0x3104; // ADDS R1, R1, 4
 
     uint16_t out;
-    add_i_t2_parts parts_for_enc{};
-    add_i_t2_parts parts_for_dec{};
+    adds_i_t2_parts parts_for_enc{};
+    adds_i_t2_parts parts_for_dec{};
 
-    EXPECT_TRUE(match_add_i_t2(add_i_t2_r1_r1_4));
+    EXPECT_TRUE(match_adds_i_t2(adds_i_t2_r1_r1_4));
 
     parts_for_enc.Rdn = 1;
     parts_for_enc.imm8 = 4;
 
-    EXPECT_EQ(encode_add_i_t2(&out, &parts_for_enc), 16);
-    EXPECT_EQ(out, add_i_t2_r1_r1_4);
+    EXPECT_EQ(encode_adds_i_t2(&out, &parts_for_enc), 16);
+    EXPECT_EQ(out, adds_i_t2_r1_r1_4);
 
-    parts_for_dec = decode_add_i_t2(out);
+    parts_for_dec = decode_adds_i_t2(out);
     EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
 }
 

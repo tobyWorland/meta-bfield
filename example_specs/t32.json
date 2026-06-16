@@ -1,5 +1,69 @@
 [
     {
+        "name": "adds_i_t1",
+        "width": 16,
+        "parts": [
+            "000 11 1 0",
+            {"name": "imm3", "width": 3},
+            {"name": "Rn", "width": 3},
+            {"name": "Rd", "width": 3}
+        ]
+    },
+    {
+        "name": "add_i_t2",
+        "width": 16,
+        "parts": [
+            "001 10",
+            {"name": "Rdn", "width": 3},
+            {"name": "imm8", "width": 8}
+        ]
+    },
+    {
+        "name": "addw_i_t4",
+        "width": 32,
+        "swapped": true,
+        "parts": [
+            "11110",
+            {"name": "i", "width": 1},
+            "1 0000 0",
+            {"name": "Rn", "width": 4},
+
+            "0",
+            {"name": "imm3", "width": 3},
+            {"name": "Rd", "width": 4},
+            {"name": "imm8", "width": 8}
+        ],
+        "export": [
+            "Rd",
+            "Rn",
+            {"name": "imm12", "parts": ["i", "imm3", "imm8"], "signed": false}
+        ]
+    },
+    {
+        "name": "adds_r_t1",
+        "width": 16,
+        "parts": [
+            "000 11 0 0",
+            {"name": "Rm", "width": 3},
+            {"name": "Rn", "width": 3},
+            {"name": "Rd", "width": 3}
+        ]
+    },
+    {
+        "name": "add_r_t2",
+        "width": 16,
+        "parts": [
+            "010001 00",
+            {"name": "Rdn_3", "width": 1},
+            {"name": "Rm", "width": 4},
+            {"name": "Rdn_2_0", "width": 3}
+        ],
+        "export": [
+            {"name": "Rdn", "parts": ["Rdn_3", "Rdn_2_0"], "signed": false},
+            "Rm"
+        ]
+    },
+    {
         "name": "b_cond_t1_noit",
         "width": 16,
         "parts": [

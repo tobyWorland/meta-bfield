@@ -30,6 +30,104 @@ enum thumb_condition {
 // would have a immediate of -4 to branch to the current
 // instruction. (regardless of if it's narrow or wide)
 
+TEST(t32_encoding_spec, adds_i_t1) {
+    constexpr uint16_t adds_i_t1_r1_r2_1 = 0x1C51; // ADDS R1, R2, 1
+
+    uint16_t out;
+    adds_i_t1_parts parts_for_enc{};
+    adds_i_t1_parts parts_for_dec{};
+
+    EXPECT_TRUE(match_adds_i_t1(adds_i_t1_r1_r2_1));
+
+    parts_for_enc.Rd = 1;
+    parts_for_enc.Rn = 2;
+    parts_for_enc.imm3 = 1;
+
+    EXPECT_EQ(encode_adds_i_t1(&out, &parts_for_enc), 16);
+    EXPECT_EQ(out, adds_i_t1_r1_r2_1);
+
+    parts_for_dec = decode_adds_i_t1(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+}
+
+TEST(t32_encoding_spec, add_i_t2) {
+    constexpr uint16_t add_i_t2_r1_r1_4 = 0x3104; // ADD R1, R1, 4
+
+    uint16_t out;
+    add_i_t2_parts parts_for_enc{};
+    add_i_t2_parts parts_for_dec{};
+
+    EXPECT_TRUE(match_add_i_t2(add_i_t2_r1_r1_4));
+
+    parts_for_enc.Rdn = 1;
+    parts_for_enc.imm8 = 4;
+
+    EXPECT_EQ(encode_add_i_t2(&out, &parts_for_enc), 16);
+    EXPECT_EQ(out, add_i_t2_r1_r1_4);
+
+    parts_for_dec = decode_add_i_t2(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+}
+
+TEST(t32_encoding_spec, addw_i_t4) {
+    constexpr uint32_t addw_i_t4_r10_r9_123h = 0x1A23'F209; // ADDW R10, R9, 0x123
+
+    uint32_t out;
+    addw_i_t4_parts parts_for_enc{};
+    addw_i_t4_parts parts_for_dec{};
+
+    EXPECT_TRUE(match_addw_i_t4(addw_i_t4_r10_r9_123h));
+
+    parts_for_enc.Rd = 10;
+    parts_for_enc.Rn = 9;
+    parts_for_enc.imm12 = 0x123;
+
+    EXPECT_EQ(encode_addw_i_t4(&out, &parts_for_enc), 32);
+    EXPECT_EQ(out, addw_i_t4_r10_r9_123h);
+
+    parts_for_dec = decode_addw_i_t4(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+}
+
+TEST(t32_encoding_spec, adds_r_t1) {
+    constexpr uint16_t adds_r_t1_r1_r2_r3 = 0x18D1; // ADDS R1, R2, R3
+
+    uint16_t out;
+    adds_r_t1_parts parts_for_enc{};
+    adds_r_t1_parts parts_for_dec{};
+
+    EXPECT_TRUE(match_adds_r_t1(adds_r_t1_r1_r2_r3));
+
+    parts_for_enc.Rd = 1;
+    parts_for_enc.Rn = 2;
+    parts_for_enc.Rm = 3;
+
+    EXPECT_EQ(encode_adds_r_t1(&out, &parts_for_enc), 16);
+    EXPECT_EQ(out, adds_r_t1_r1_r2_r3);
+
+    parts_for_dec = decode_adds_r_t1(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+}
+
+TEST(t32_encoding_spec, add_r_t2) {
+    constexpr uint16_t add_r_t2_r1_r1_r3 = 0x4419; // ADD R1, R1, R3
+
+    uint16_t out;
+    add_r_t2_parts parts_for_enc{};
+    add_r_t2_parts parts_for_dec{};
+
+    EXPECT_TRUE(match_add_r_t2(add_r_t2_r1_r1_r3));
+
+    parts_for_enc.Rdn = 1;
+    parts_for_enc.Rm = 3;
+
+    EXPECT_EQ(encode_add_r_t2(&out, &parts_for_enc), 16);
+    EXPECT_EQ(out, add_r_t2_r1_r1_r3);
+
+    parts_for_dec = decode_add_r_t2(out);
+    EXPECT_EQ(std::memcmp(&parts_for_dec, &parts_for_enc, sizeof(parts_for_dec)), 0);
+}
+
 TEST(t32_encoding_spec, b_t1) {
     constexpr uint16_t bt1_eq_pcoff4     = 0xD002;
     constexpr uint16_t bt1_ne_pcoff_neg4 = 0xD1FE;

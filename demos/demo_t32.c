@@ -40,9 +40,9 @@ int main() {
 #endif
 
 #if 1
-    struct cmp_r_t2_parts parts = {};
-    parts.Rn = 10;
-    parts.Rm = 9;
+    struct add_r_t2_parts parts = {};
+    parts.Rdn = 1;
+    parts.Rm = 3;
 
     uint16_t narrow;
     union {
@@ -50,7 +50,7 @@ int main() {
         uint16_t wide_hw[2];
     } w = {};
 
-    unsigned ret = encode_cmp_r_t2(&narrow, &parts);
+    unsigned ret = encode_add_r_t2(&narrow, &parts);
 
     printf("Success? %u\n", ret != 0);
 

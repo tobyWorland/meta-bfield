@@ -1,5 +1,6 @@
 #include "spec.hpp"
 
+#include "bfield_builder.hpp"
 #include "bpart_reserved.hpp"
 
 #include <boost/json.hpp>
@@ -10,7 +11,6 @@
 #include <unordered_map>
 
 // TODO: include the json or field in the error message
-// TODO: Remove boost/json.hpp include from the header and hide in the source class
 
 template <typename T>
 static T &expect_value_type(boost::system::result<T &> result,
@@ -54,7 +54,16 @@ static boost::json::value json_from_stream(std::istream &stream) {
     return stream_parser.release();
 }
 
-void SpecReader::extract_parts(boost::json::value element_parts) {
+struct SpecReader::pimpl {
+    BFieldBuilder m_field_builder;
+
+    void extract_parts(boost::json::value element_parts);
+    void extract_exports(boost::json::value element_exports);
+    void extract_field(boost::json::value element);
+    std::vector<BField> fields_from_json(boost::json::value &value);
+};
+
+void SpecReader::pimpl::extract_parts(boost::json::value element_parts) {
     auto part_array = expect_value_type(element_parts.try_as_array(),
                                         "Expected parts to be an array");
 
@@ -109,7 +118,7 @@ void SpecReader::extract_parts(boost::json::value element_parts) {
     }
 }
 
-void SpecReader::extract_exports(boost::json::value element_exports) {
+void SpecReader::pimpl::extract_exports(boost::json::value element_exports) {
     auto export_array = expect_value_type(element_exports.try_as_array(),
                                         "Expected exports to be an array");
 
@@ -162,7 +171,7 @@ void SpecReader::extract_exports(boost::json::value element_exports) {
     }
 }
 
-void SpecReader::extract_field(boost::json::value element) {
+void SpecReader::pimpl::extract_field(boost::json::value element) {
     auto obj = expect_value_type(element.try_as_object(), "Expected top level array to contain field objects");
     for (auto &pair: obj) {
         const static std::unordered_map<boost::json::string, std::function<void(boost::json::value)>> map {
@@ -202,7 +211,7 @@ void SpecReader::extract_field(boost::json::value element) {
     }
 }
 
-std::vector<BField> SpecReader::fields_from_json(boost::json::value &value) {
+std::vector<BField> SpecReader::pimpl::fields_from_json(boost::json::value &value) {
     std::vector<BField> fields;
 
     auto field_arr = expect_value_type(value.try_as_array(), "Expected top level json to be an array");
@@ -224,5 +233,5 @@ std::vector<BField> SpecReader::read_from_spec(std::filesystem::path spec_path) 
     auto json = json_from_stream(file);
     file.close();
 
-    return fields_from_json(json);
+    return pimpl().fields_from_json(json);
 }

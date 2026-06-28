@@ -21,11 +21,12 @@ class BFieldBuilder {
     std::vector<BExport> m_exports;
     bool m_swapped{false};
 
-    // TODO: group these in a struct
-    std::optional<std::string> m_new_export_name;
-    std::vector<const IBPart*> m_new_export_part_refs;
-    std::optional<bool> m_new_export_is_signed;
-    std::optional<unsigned> m_new_export_optional_shift;
+    struct {
+        std::optional<std::string> name;
+        std::vector<const IBPart*> part_refs;
+        std::optional<bool> is_signed;
+        std::optional<unsigned> optional_shift;
+    } m_new_export;
 
 public:
     void reset();

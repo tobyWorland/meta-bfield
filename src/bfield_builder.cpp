@@ -27,36 +27,33 @@ void BFieldBuilder::set_swapped() {
 }
 
 void BFieldBuilder::export_new() {
-    m_new_export_name.reset();
-    m_new_export_part_refs.clear();
-    m_new_export_is_signed.reset();
-    m_new_export_optional_shift.reset();
+    m_new_export = {};
 }
 void BFieldBuilder::export_set_name(std::string name) {
-    if (m_new_export_name) {
+    if (m_new_export.name) {
         throw BFieldBuilderError(std::format("{}({}) called when name is already set to {}",
-                                             __func__, name, *m_new_export_name));
+                                             __func__, name, *m_new_export.name));
     }
-    m_new_export_name = std::move(name);
+    m_new_export.name = std::move(name);
 }
 void BFieldBuilder::export_push_part(std::string part_name) {
     // If the optional shift is set then we cannot accept any more parts
     // The shift must occur at the end of the export's part list
-    if (m_new_export_optional_shift) {
+    if (m_new_export.optional_shift) {
         throw BFieldBuilderError("Export cannot accept any more parts after a part of all 0s has been used");
     }
 
     // Handle the all zero part
     if (std::all_of(part_name.cbegin(), part_name.cend(), [](char c) { return c == '0'; })) {
         auto zero_count = part_name.size();
-        m_new_export_optional_shift = zero_count;
+        m_new_export.optional_shift = zero_count;
         return;
     }
 
     // Look for a variable part with the name we want
     for (const auto &part : m_parts) {
         if (const BPartVariable *var_part = part.get()->variable_name_match(part_name)) {
-            m_new_export_part_refs.push_back(var_part);
+            m_new_export.part_refs.push_back(var_part);
             return;
         }
     }
@@ -65,26 +62,26 @@ void BFieldBuilder::export_push_part(std::string part_name) {
     throw BFieldBuilderError(std::format("Cannot export part '{}' as it doesn't exist.", part_name));
 }
 void BFieldBuilder::export_set_signed(bool is_signed) {
-    if (m_new_export_is_signed) {
+    if (m_new_export.is_signed) {
         throw BFieldBuilderError(std::format("{}({}) called when is_signed is already set to {}",
-                                             __func__, is_signed, *m_new_export_is_signed));
+                                             __func__, is_signed, *m_new_export.is_signed));
     }
-    m_new_export_is_signed = is_signed;
+    m_new_export.is_signed = is_signed;
 }
 void BFieldBuilder::export_commit() {
-    if (!m_new_export_name) {
+    if (!m_new_export.name) {
         throw BFieldBuilderError("Attempt to export without an export name");
     }
-    if (m_new_export_part_refs.empty()) {
+    if (m_new_export.part_refs.empty()) {
         throw BFieldBuilderError("Attempt to export without any parts");
     }
-    if (!m_new_export_is_signed) {
+    if (!m_new_export.is_signed) {
         throw BFieldBuilderError("Attempt to export without is signed set");
     }
 
-    unsigned shift = m_new_export_optional_shift.value_or(0);
+    unsigned shift = m_new_export.optional_shift.value_or(0);
 
-    auto e = BExport(*m_new_export_name, m_new_export_part_refs, *m_new_export_is_signed, shift);
+    auto e = BExport(*m_new_export.name, m_new_export.part_refs, *m_new_export.is_signed, shift);
     m_exports.push_back(std::move(e));
 }
 

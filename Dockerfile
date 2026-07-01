@@ -1,9 +1,8 @@
-FROM debian:latest
+FROM debian:trixie
 RUN apt-get update && \
 apt-get install -y --no-install-recommends \
 ca-certificates build-essential cmake git wget && \
-rm -rf /var/cache/apt/{archives,lists/*}
-RUN update-ca-certificates
+rm -rf /var/cache/apt/archives /var/lib/apt/lists/*
 RUN wget https://archives.boost.io/release/1.91.0/source/boost_1_91_0.tar.bz2 && \
 tar -xf boost_*.tar.bz2 && \
 rm *.tar.bz2 && \

@@ -54,7 +54,7 @@ static boost::json::value json_from_stream(std::istream &stream) {
     return stream_parser.release();
 }
 
-struct SpecReader::pimpl {
+struct SpecReader::Impl {
     BFieldBuilder m_field_builder;
 
     void extract_parts(boost::json::value element_parts);
@@ -63,7 +63,7 @@ struct SpecReader::pimpl {
     std::vector<BField> fields_from_json(boost::json::value &value);
 };
 
-void SpecReader::pimpl::extract_parts(boost::json::value element_parts) {
+void SpecReader::Impl::extract_parts(boost::json::value element_parts) {
     auto part_array = expect_value_type(element_parts.try_as_array(),
                                         "Expected parts to be an array");
 
@@ -118,7 +118,7 @@ void SpecReader::pimpl::extract_parts(boost::json::value element_parts) {
     }
 }
 
-void SpecReader::pimpl::extract_exports(boost::json::value element_exports) {
+void SpecReader::Impl::extract_exports(boost::json::value element_exports) {
     auto export_array = expect_value_type(element_exports.try_as_array(),
                                         "Expected exports to be an array");
 
@@ -171,7 +171,7 @@ void SpecReader::pimpl::extract_exports(boost::json::value element_exports) {
     }
 }
 
-void SpecReader::pimpl::extract_field(boost::json::value element) {
+void SpecReader::Impl::extract_field(boost::json::value element) {
     auto obj = expect_value_type(element.try_as_object(), "Expected top level array to contain field objects");
     for (auto &pair: obj) {
         const static std::unordered_map<boost::json::string, std::function<void(boost::json::value)>> map {
@@ -211,7 +211,7 @@ void SpecReader::pimpl::extract_field(boost::json::value element) {
     }
 }
 
-std::vector<BField> SpecReader::pimpl::fields_from_json(boost::json::value &value) {
+std::vector<BField> SpecReader::Impl::fields_from_json(boost::json::value &value) {
     std::vector<BField> fields;
 
     auto field_arr = expect_value_type(value.try_as_array(), "Expected top level json to be an array");
@@ -233,5 +233,5 @@ std::vector<BField> SpecReader::read_from_spec(std::filesystem::path spec_path) 
     auto json = json_from_stream(file);
     file.close();
 
-    return pimpl().fields_from_json(json);
+    return Impl().fields_from_json(json);
 }

@@ -15,7 +15,7 @@ public:
 };
 
 class SpecReader {
-    struct pimpl;
+    struct Impl;
 
 public:
     std::vector<BField> read_from_spec(std::filesystem::path spec_path);

@@ -13,14 +13,15 @@ int main(int argc, char **argv) {
 
     std::string input_spec_path = argv[1];
     std::string output_path = argv[2];
-
     SpecReader spec_reader;
+
     auto fields = spec_reader.read_from_spec(argv[1]);
 
     if (generate_fields(output_path, fields)) {
         std::cout << "Generate successful\n";
     } else {
         std::cout << "Generate failed\n";
+        return 1;
     }
 
     return 0;

@@ -8,6 +8,7 @@ void BFieldBuilder::reset() {
     m_field_width.reset();
     m_swapped = false;
     m_parts.clear();
+    m_exports.clear();
 }
 
 void BFieldBuilder::set_field_name(const std::string &name) {

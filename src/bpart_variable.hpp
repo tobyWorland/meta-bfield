@@ -14,8 +14,8 @@ public:
 
     virtual const BPartVariable *variable_name_match(std::string_view name) const override;
 
-    const std::string &name() const;
-    bool has_exprs() const;
-    std::string encode_expr(std::string_view name) const;
-    std::string decode_expr(std::string_view name) const;
+    [[nodiscard]] const std::string &name() const;
+    [[nodiscard]] bool has_exprs() const;
+    [[nodiscard]] std::string encode_expr(std::string_view name) const;
+    [[nodiscard]] std::string decode_expr(std::string_view name) const;
 };

@@ -22,13 +22,13 @@ class BField {
            std::vector<std::unique_ptr<IBPart>> parts,
            std::vector<BExport> exports);
 
-    const std::string &name() const;
-    unsigned width() const;
-    const std::vector<std::unique_ptr<IBPart>> &parts() const;
-    unsigned reserved_value() const; // TODO: Test
-    bool any_variable_parts() const;
-    bool any_reserved_parts() const;
-    const std::vector<BExport> exports() const;
-    bool is_part_exported(const IBPart *part) const;
-    unsigned part_shift(const IBPart *part) const;
+    [[nodiscard]] const std::string &name() const;
+    [[nodiscard]] unsigned width() const;
+    [[nodiscard]] const std::vector<std::unique_ptr<IBPart>> &parts() const;
+    [[nodiscard]] unsigned reserved_value() const; // TODO: Test
+    [[nodiscard]] bool any_variable_parts() const;
+    [[nodiscard]] bool any_reserved_parts() const;
+    [[nodiscard]] const std::vector<BExport> exports() const;
+    [[nodiscard]] bool is_part_exported(const IBPart *part) const;
+    [[nodiscard]] unsigned part_shift(const IBPart *part) const;
 };

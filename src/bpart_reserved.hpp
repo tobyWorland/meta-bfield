@@ -10,5 +10,5 @@ public:
     BPartReserved(unsigned width, unsigned reserved);
     BPartReserved(ReservedValue res_value);
 
-    unsigned reserved_value() const;
+    [[nodiscard]] unsigned reserved_value() const;
 };

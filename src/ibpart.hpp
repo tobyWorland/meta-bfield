@@ -11,10 +11,10 @@ protected:
 
     IBPart(unsigned width);
 public:
-    virtual unsigned width() const;
+    [[nodiscard]] virtual unsigned width() const;
 
-    const BPartReserved *reserved() const;
-    const BPartVariable *variable() const;
+    [[nodiscard]] const BPartReserved *reserved() const;
+    [[nodiscard]] const BPartVariable *variable() const;
 
-    virtual const BPartVariable *variable_name_match(std::string_view name) const;
+    [[nodiscard]] virtual const BPartVariable *variable_name_match(std::string_view name) const;
 };
